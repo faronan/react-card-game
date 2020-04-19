@@ -1,25 +1,27 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React from "react";
-import logo from "./logo.svg";
+import { Route, Switch } from "react-router-dom";
 import "./App.css";
-//import firebase from './Firebase';
+import { Edit } from "./components/Edit";
+import { Create } from "./components/Create";
+import { Show } from "./components/Show";
+import { Home } from "./components/Home";
+import firebase from "./Firebase";
+
+const NotFound = () => {
+  return <h2>ページが見つかりません</h2>;
+};
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Switch>
+        <Route exact path="/" component={Home} />
+        <Route path="/edit/:id" component={Edit} />
+        <Route path="/create" component={Create} />
+        <Route path="/show/:id" component={Show} />
+        <Route component={NotFound} />
+      </Switch>
     </div>
   );
 }
