@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React, { Component, useState } from "react";
+import React, { useState } from "react";
 import firebase from "../Firebase";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import {
   CardInterface,
   cardColors,
@@ -23,6 +23,8 @@ export const Create = () => {
     tags: [],
   };
   const [card, setCard] = useState<CardInterface>(initialCard);
+  const history = useHistory();
+
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const name = e.target.name;
     const value = (() => {
@@ -44,7 +46,17 @@ export const Create = () => {
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log(card);
+    firebase
+      .firestore()
+      .collection("cards")
+      .add(card)
+      .then((a) => {
+        setCard(initialCard);
+        history.push("/");
+      })
+      .catch((error) => {
+        console.error("Error adding document: ", error);
+      });
   };
 
   const colorCheckboxList = (
