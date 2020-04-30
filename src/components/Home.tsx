@@ -1,11 +1,25 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React, { Component, useState } from "react";
+import React, { Component, useState, useEffect } from "react";
 import firebase from "../Firebase";
 import { Link } from "react-router-dom";
 import { CardInterface } from "../interface/CardInterface";
 
 export const Home = () => {
-  const [cards, setCards] = useState<CardInterface[]>([]);
+  const [cards, setCards] = useState<(CardInterface & { key: string })[]>([]);
+  useEffect(() => {
+    firebase
+      .firestore()
+      .collection("cards")
+      .get()
+      .then((querySnapshot) => {
+        const cards = querySnapshot.docs.map((doc) => {
+          const data = doc.data() as CardInterface;
+          return { ...data, key: doc.id };
+        });
+        setCards(cards);
+      });
+  });
+
   return (
     <div className="container">
       <div className="panel panel-default">
@@ -20,18 +34,34 @@ export const Home = () => {
             <thead>
               <tr>
                 <th>Id</th>
-                <th>CharName</th>
-                <th>Image</th>
+                <th>画像</th>
+                <th>色</th>
+                <th>キャラクター名</th>
+                <th>コスト</th>
+                <th>CCコスト</th>
+                <th>戦闘力</th>
+                <th>支援</th>
+                <th>支援効果</th>
+                <th>タグ</th>
               </tr>
             </thead>
             <tbody>
               {cards.map((card) => (
-                <tr>
+                <tr key={card.id}>
                   <td>
-                    <Link to={`/show/${card.id}`}>{card.id}</Link>
+                    <Link to={`/show/${card.key}`}>{card.id}</Link>
                   </td>
+                  <td>
+                    <img src={`${card.image}`} alt="" />
+                  </td>
+                  <td>{card.color}</td>
                   <td>{card.char_name}</td>
-                  <td>{card.image}</td>
+                  <td>{card.cost}</td>
+                  <td>{card.over_cost}</td>
+                  <td>{card.power}</td>
+                  <td>{card.support_power}</td>
+                  <td>{card.support_effect}</td>
+                  <td>{card.tags}</td>
                 </tr>
               ))}
             </tbody>
