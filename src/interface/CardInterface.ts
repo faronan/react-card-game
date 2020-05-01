@@ -20,12 +20,14 @@ type CardColors = typeof cardColors[keyof typeof cardColors];
 
 export const supportEffects = {
   NONE: "無し",
-  ATTACK: "攻撃紋章",
-  GUARDS: "守り紋章",
-  FLY: "飛行紋章",
-  MAGIC: "魔術紋章",
-  DARK: "暗闇紋章",
-  PRAY: "祈り紋章",
+  ATTACK: "攻撃",
+  GUARDS: "守り",
+  FLY: "飛行",
+  MAGIC: "魔術",
+  DARK: "暗闇",
+  PRAY: "祈り",
+  HERO: "英雄",
+  DORAGON: "竜人",
 } as const;
 type SupportEffects = typeof supportEffects[keyof typeof supportEffects];
 

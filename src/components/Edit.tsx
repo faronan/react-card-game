@@ -8,6 +8,7 @@ import {
   supportEffects,
   cardtags,
 } from "../interface/CardInterface";
+import "../css/style.css";
 
 export const Edit = () => {
   const [card, setCard] = useState<CardInterface | null>();
@@ -26,7 +27,7 @@ export const Edit = () => {
           }
         })
         .catch((error) => {
-          console.log(error);
+          console.error(error);
         });
     })();
   }, [id]);
@@ -68,7 +69,7 @@ export const Edit = () => {
         history.push("/");
       })
       .catch((error) => {
-        console.error("Error adding document: ", error);
+        console.error(error);
       });
   };
 
@@ -129,8 +130,20 @@ export const Edit = () => {
     );
   };
 
+  const back = () => {
+    history.goBack();
+  };
+
   return !card || !id ? (
-    <div>Not Found</div>
+    <div id="back">
+      <div id="rotate">
+        <div id="move">
+          <div id="dot"></div>
+        </div>
+        <div id="ring"></div>
+      </div>
+      <p>loading...</p>
+    </div>
   ) : (
     <div className="container">
       <div className="panel panel-default">
@@ -139,10 +152,11 @@ export const Edit = () => {
         </div>
         <div className="panel-body">
           <h4>
-            <Link to="/" className="btn btn-primary">
-              CARD List
-            </Link>
+            <Link to="/">CARD List</Link>
           </h4>
+          <button className="btn btn-danger" onClick={back}>
+            Back
+          </button>
           <form onSubmit={onSubmit}>
             <div className="form-group row">
               <label htmlFor="id" className="col-sm-2 col-form-label">

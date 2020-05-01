@@ -55,7 +55,7 @@ export const Create = () => {
         history.push("/");
       })
       .catch((error) => {
-        console.error("Error adding document: ", error);
+        console.error(error);
       });
   };
 
@@ -112,9 +112,7 @@ export const Create = () => {
         </div>
         <div className="panel-body">
           <h4>
-            <Link to="/" className="btn btn-primary">
-              CARD List
-            </Link>
+            <Link to="/">CARD List</Link>
           </h4>
           <form onSubmit={onSubmit}>
             <div className="form-group row">

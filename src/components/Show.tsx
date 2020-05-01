@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import firebase from "../Firebase";
 import { Link, useHistory, useParams } from "react-router-dom";
 import { CardInterface } from "../interface/CardInterface";
+import "../css/style.css";
 
 export const Show = () => {
   const [card, setCard] = useState<CardInterface | null>();
@@ -21,7 +22,7 @@ export const Show = () => {
           }
         })
         .catch((error) => {
-          console.log(error);
+          console.error(error);
         });
     })();
   }, [id]);
@@ -36,17 +37,25 @@ export const Show = () => {
         history.push("/");
       })
       .catch((error) => {
-        console.log(error);
+        console.error(error);
       });
   };
   return !card || !id ? (
-    <div>Not Found</div>
+    <div id="back">
+      <div id="rotate">
+        <div id="move">
+          <div id="dot"></div>
+        </div>
+        <div id="ring"></div>
+      </div>
+      <p>loading...</p>
+    </div>
   ) : (
     <div className="container">
       <div className="panel panel-default">
         <div className="panel-heading">
           <h4>
-            <Link to="/">Board List</Link>
+            <Link to="/">Card List</Link>
           </h4>
           <h3 className="panel-title">{card.char_name}</h3>
         </div>

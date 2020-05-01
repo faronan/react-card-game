@@ -30,7 +30,9 @@ export const Home = () => {
         </div>
         <div className="panel-body">
           <h4>
-            <Link to="/create">Create Card</Link>
+            <Link to="/create" className="btn btn-primary">
+              Create Card
+            </Link>
           </h4>
           <table className="table table-stripe">
             <thead>
@@ -63,7 +65,7 @@ export const Home = () => {
                   <td>{card.power}</td>
                   <td>{card.support_power}</td>
                   <td>{card.support_effect}</td>
-                  <td>{card.tags}</td>
+                  <td>{card.tags.join("\n")}</td>
                 </tr>
               ))}
             </tbody>

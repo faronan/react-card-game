@@ -1,0 +1,118 @@
+#back {
+  background: #303030;
+}
+
+#dot {
+  height: 20px;
+  width: 20px;
+  border-radius: 100%;
+
+  position: absolute;
+  margin: auto;
+  right: 0;
+  left: 0;
+  top: 0;
+  bottom: 0;
+
+  background: #e74c3c;
+}
+
+#ring {
+  height: 20px;
+  width: 20px;
+  border-radius: 100%;
+
+  position: absolute;
+  margin: auto;
+  right: 0;
+  left: 0;
+  top: 0;
+  bottom: 0;
+
+  border: 2px solid #e74c3c;
+
+  animation-name: bloop;
+  animation-duration: 1s;
+  animation-timing-function: ease-out;
+  animation-iteration-count: infinite;
+  animation-delay: 0.7s;
+}
+
+@keyframes bloop {
+  0% {
+    width: 10px;
+    height: 10px;
+    opacity: 1;
+  }
+  100% {
+    width: 100px;
+    height: 100px;
+    opacity: 0;
+  }
+}
+
+@keyframes move {
+  0% {
+    right: 0;
+    left: 0;
+    top: -190px;
+    bottom: 0;
+  }
+
+  30% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(0.5);
+  }
+  70% {
+    transform: scale(1);
+  }
+
+  100% {
+    right: 0;
+    left: 0;
+    top: 190px;
+    bottom: 0;
+  }
+}
+
+#move {
+  position: absolute;
+  margin: auto;
+  animation-name: move;
+  animation-duration: 1s;
+  animation-direction: alternate;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+
+#rotate {
+  position: absolute;
+  margin: auto;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  animation-name: rotate;
+  animation-duration: 20s;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+p {
+  text-align: center;
+  color: white;
+  font-family: sans-serif;
+  font-size: 2em;
+  margin-top: 60%;
+}
