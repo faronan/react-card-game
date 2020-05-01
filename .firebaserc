@@ -1,5 +1,6 @@
 {
   "projects": {
-    "default": "react-card-game-3847f"
+    "default": "react-card-game-3847f",
+    "staging": "react-card-game-3847f"
   }
 }
