@@ -1,41 +1,27 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import firebase from "../../Firebase";
-import { Link, useHistory, useParams } from "react-router-dom";
+import { Link, useHistory, useLocation } from "react-router-dom";
 import {
   CardInterface,
   cardColors,
   supportEffects,
   cardtags,
 } from "../../interface/CardInterface";
-import "../../css/style.css";
 
 export const Edit = () => {
-  const [card, setCard] = useState<CardInterface | null>();
   const history = useHistory();
-  const { id } = useParams();
-  useEffect(() => {
-    (async () => {
-      firebase
-        .firestore()
-        .collection("cards")
-        .doc(id)
-        .get()
-        .then((doc) => {
-          if (doc.exists) {
-            setCard(doc.data() as CardInterface);
-          }
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-    })();
-  }, [id]);
+  const location = useLocation();
+  interface state {
+    card: CardInterface;
+    key: string;
+  }
+  const state = location.state as state;
+  const key = state["key"];
+
+  const [card, setCard] = useState<CardInterface>(state["card"]);
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!card) {
-      return;
-    }
     const name = e.target.name;
     const value = (() => {
       if (name !== "tags") {
@@ -55,17 +41,13 @@ export const Edit = () => {
   };
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    if (!card) {
-      return;
-    }
     e.preventDefault();
     firebase
       .firestore()
       .collection("cards")
-      .doc(id)
+      .doc(key)
       .set(card)
       .then((a) => {
-        setCard(null);
         history.push("/");
       })
       .catch((error) => {
@@ -134,17 +116,7 @@ export const Edit = () => {
     history.goBack();
   };
 
-  return !card || !id ? (
-    <div id="back">
-      <div id="rotate">
-        <div id="move">
-          <div id="dot"></div>
-        </div>
-        <div id="ring"></div>
-      </div>
-      <p>loading...</p>
-    </div>
-  ) : (
+  return (
     <div className="container">
       <div className="panel panel-default">
         <div className="panel-heading">

@@ -1,31 +1,19 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React, { useState, useEffect } from "react";
+import React from "react";
 import firebase from "../../Firebase";
-import { Link, useHistory, useParams } from "react-router-dom";
+import { Link, useHistory, useLocation } from "react-router-dom";
 import { CardInterface } from "../../interface/CardInterface";
-import "../../css/style.css";
 
 export const Show = () => {
-  const [card, setCard] = useState<CardInterface | null>();
   const history = useHistory();
-  const { id } = useParams();
-  useEffect(() => {
-    (async () => {
-      firebase
-        .firestore()
-        .collection("cards")
-        .doc(id)
-        .get()
-        .then((doc) => {
-          if (doc.exists) {
-            setCard(doc.data() as CardInterface);
-          }
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-    })();
-  }, [id]);
+  const location = useLocation();
+  interface state {
+    card: CardInterface;
+    key: string;
+  }
+  const state = location.state as state;
+  const card = state["card"];
+  const key = state["key"];
 
   const deleteCard = (id: string) => {
     firebase
@@ -40,17 +28,7 @@ export const Show = () => {
         console.error(error);
       });
   };
-  return !card || !id ? (
-    <div id="back">
-      <div id="rotate">
-        <div id="move">
-          <div id="dot"></div>
-        </div>
-        <div id="ring"></div>
-      </div>
-      <p>loading...</p>
-    </div>
-  ) : (
+  return (
     <div className="container">
       <div className="panel panel-default">
         <div className="panel-heading">
@@ -67,10 +45,16 @@ export const Show = () => {
             <dd>{card.color}</dd> */}
             <img src={`${card.image}`} alt="" />
           </dl>
-          <Link to={`/edit/${id}`} className="btn btn-success">
+          <Link
+            to={{
+              pathname: `/edit`,
+              state: { card, key },
+            }}
+            className="btn btn-success"
+          >
             Edit
           </Link>
-          <button onClick={() => deleteCard(id)} className="btn btn-danger">
+          <button onClick={() => deleteCard(key)} className="btn btn-danger">
             Delete
           </button>
         </div>

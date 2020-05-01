@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React, { Component, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import firebase from "../Firebase";
 import { Link } from "react-router-dom";
 import { CardInterface } from "../interface/CardInterface";
+import "../css/style.css";
 
 export const Home = () => {
   const [cards, setCards] = useState<(CardInterface & { key: string })[]>([]);
@@ -22,7 +23,17 @@ export const Home = () => {
     })();
   }, []);
 
-  return (
+  return cards.length === 0 ? (
+    <div id="back">
+      <div id="rotate">
+        <div id="move">
+          <div id="dot"></div>
+        </div>
+        <div id="ring"></div>
+      </div>
+      <p>loading...</p>
+    </div>
+  ) : (
     <div className="container">
       <div className="panel panel-default">
         <div className="panel-heading">
@@ -53,7 +64,14 @@ export const Home = () => {
               {cards.map((card) => (
                 <tr key={card.id}>
                   <td>
-                    <Link to={`/show/${card.key}`}>{card.id}</Link>
+                    <Link
+                      to={{
+                        pathname: `/show`,
+                        state: { card, key: card.key },
+                      }}
+                    >
+                      {card.id}
+                    </Link>
                   </td>
                   <td>
                     <img src={`${card.image}`} alt="" />

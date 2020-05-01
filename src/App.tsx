@@ -17,9 +17,9 @@ function App() {
     <div className="App">
       <Switch>
         <Route exact path="/" component={Home} />
-        <Route path="/edit/:id" component={Edit} />
+        <Route path="/edit" component={Edit} />
         <Route path="/create" component={Create} />
-        <Route path="/show/:id" component={Show} />
+        <Route path="/show" component={Show} />
         <Route component={NotFound} />
       </Switch>
     </div>
