@@ -7,18 +7,20 @@ import { CardInterface } from "../interface/CardInterface";
 export const Home = () => {
   const [cards, setCards] = useState<(CardInterface & { key: string })[]>([]);
   useEffect(() => {
-    firebase
-      .firestore()
-      .collection("cards")
-      .get()
-      .then((querySnapshot) => {
-        const cards = querySnapshot.docs.map((doc) => {
-          const data = doc.data() as CardInterface;
-          return { ...data, key: doc.id };
+    (async () => {
+      firebase
+        .firestore()
+        .collection("cards")
+        .get()
+        .then((querySnapshot) => {
+          const cards = querySnapshot.docs.map((doc) => {
+            const data = doc.data() as CardInterface;
+            return { ...data, key: doc.id };
+          });
+          setCards(cards);
         });
-        setCards(cards);
-      });
-  });
+    })();
+  }, []);
 
   return (
     <div className="container">

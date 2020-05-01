@@ -9,20 +9,22 @@ export const Show = () => {
   const history = useHistory();
   const { id } = useParams();
   useEffect(() => {
-    firebase
-      .firestore()
-      .collection("cards")
-      .doc(id)
-      .get()
-      .then((doc) => {
-        if (doc.exists) {
-          setCard(doc.data() as CardInterface);
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  });
+    (async () => {
+      firebase
+        .firestore()
+        .collection("cards")
+        .doc(id)
+        .get()
+        .then((doc) => {
+          if (doc.exists) {
+            setCard(doc.data() as CardInterface);
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    })();
+  }, [id]);
 
   const deleteCard = (id: string) => {
     firebase
