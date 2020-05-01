@@ -1,41 +1,31 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React, { useState, useEffect } from "react";
-import firebase from "../Firebase";
-import { Link, useHistory, useParams } from "react-router-dom";
+import React, { useState } from "react";
+import firebase from "../../Firebase";
+import { Link, useHistory } from "react-router-dom";
 import {
   CardInterface,
   cardColors,
   supportEffects,
   cardtags,
-} from "../interface/CardInterface";
-import "../css/style.css";
+} from "../../interface/CardInterface";
 
-export const Edit = () => {
-  const [card, setCard] = useState<CardInterface | null>();
+export const Create = () => {
+  const initialCard: CardInterface = {
+    id: 0,
+    image: "",
+    color: "赤",
+    char_name: "",
+    cost: 0,
+    over_cost: 0,
+    power: 0,
+    support_power: 0,
+    support_effect: "無し",
+    tags: [],
+  };
+  const [card, setCard] = useState<CardInterface>(initialCard);
   const history = useHistory();
-  const { id } = useParams();
-  useEffect(() => {
-    (async () => {
-      firebase
-        .firestore()
-        .collection("cards")
-        .doc(id)
-        .get()
-        .then((doc) => {
-          if (doc.exists) {
-            setCard(doc.data() as CardInterface);
-          }
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-    })();
-  }, [id]);
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!card) {
-      return;
-    }
     const name = e.target.name;
     const value = (() => {
       if (name !== "tags") {
@@ -55,17 +45,13 @@ export const Edit = () => {
   };
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    if (!card) {
-      return;
-    }
     e.preventDefault();
     firebase
       .firestore()
       .collection("cards")
-      .doc(id)
-      .set(card)
+      .add(card)
       .then((a) => {
-        setCard(null);
+        setCard(initialCard);
         history.push("/");
       })
       .catch((error) => {
@@ -73,90 +59,61 @@ export const Edit = () => {
       });
   };
 
-  const colorCheckboxList = (card: CardInterface) => {
-    return (
-      <ul>
-        {Object.values(cardColors).map((color, index) => (
-          <label key={index}>
-            <input
-              type="checkbox"
-              name="color"
-              value={color}
-              onChange={onChange}
-              checked={color === card.color}
-            />
-            {color}
-          </label>
-        ))}
-      </ul>
-    );
-  };
+  const colorCheckboxList = (
+    <ul>
+      {Object.values(cardColors).map((color, index) => (
+        <label key={index}>
+          <input
+            type="checkbox"
+            name="color"
+            value={color}
+            onChange={onChange}
+            checked={color === card.color}
+          />
+          {color}
+        </label>
+      ))}
+    </ul>
+  );
 
-  const supportCheckboxList = (card: CardInterface) => {
-    return (
-      <ul>
-        {Object.values(supportEffects).map((effect, index) => (
-          <label key={index}>
-            <input
-              type="checkbox"
-              name="support_effect"
-              value={effect}
-              onChange={onChange}
-              checked={effect === card.support_effect}
-            />
-            {effect}
-          </label>
-        ))}
-      </ul>
-    );
-  };
+  const supportCheckboxList = (
+    <ul>
+      {Object.values(supportEffects).map((effect, index) => (
+        <label key={index}>
+          <input
+            type="checkbox"
+            name="support_effect"
+            value={effect}
+            onChange={onChange}
+            checked={effect === card.support_effect}
+          />
+          {effect}
+        </label>
+      ))}
+    </ul>
+  );
 
-  const tagsCheckboxList = (card: CardInterface) => {
-    return (
-      <ul>
-        {Object.values(cardtags).map((tag, index) => (
-          <label key={index}>
-            <input
-              type="checkbox"
-              name="tags"
-              value={tag}
-              onChange={onChange}
-              checked={card.tags.includes(tag)}
-            />
-            {tag}
-          </label>
-        ))}
-      </ul>
-    );
-  };
+  const tagsCheckboxList = (
+    <ul>
+      {Object.values(cardtags).map((tag, index) => (
+        <label key={index}>
+          <input type="checkbox" name="tags" value={tag} onChange={onChange} />
+          {tag}
+        </label>
+      ))}
+    </ul>
+  );
 
-  const back = () => {
-    history.goBack();
-  };
-
-  return !card || !id ? (
-    <div id="back">
-      <div id="rotate">
-        <div id="move">
-          <div id="dot"></div>
-        </div>
-        <div id="ring"></div>
-      </div>
-      <p>loading...</p>
-    </div>
-  ) : (
+  return (
     <div className="container">
       <div className="panel panel-default">
         <div className="panel-heading">
-          <h3 className="panel-title">EDIT CARD</h3>
+          <h3 className="panel-title">ADD CARD</h3>
         </div>
         <div className="panel-body">
           <h4>
             <Link to="/">CARD List</Link>
           </h4>
-          <button className="btn btn-danger" onClick={back}>
-            Back
-          </button>
           <form onSubmit={onSubmit}>
             <div className="form-group row">
               <label htmlFor="id" className="col-sm-2 col-form-label">
@@ -193,7 +150,7 @@ export const Edit = () => {
               <label htmlFor="color" className="col-sm-2 col-form-label">
                 色<span style={{ color: "red" }}>(必須)</span>:
               </label>
-              <div className="col-sm-0">{colorCheckboxList(card)}</div>
+              <div className="col-sm-0">{colorCheckboxList}</div>
             </div>
             <div className="form-group row">
               <label htmlFor="char_name" className="col-sm-2 col-form-label">
@@ -275,13 +232,13 @@ export const Edit = () => {
               >
                 支援効果<span style={{ color: "red" }}>(必須)</span>:
               </label>
-              <div className="col-sm-0">{supportCheckboxList(card)}</div>
+              <div className="col-sm-0">{supportCheckboxList}</div>
             </div>
             <div className="form-group row">
               <label htmlFor="tags" className="col-sm-2 col-form-label">
                 タグ<span style={{ color: "red" }}>(複数選択可)</span>:
               </label>
-              <div className="col-sm-0">{tagsCheckboxList(card)}</div>
+              <div className="col-sm-0">{tagsCheckboxList}</div>
             </div>
             <button type="submit" className="btn btn-success">
               Submit
@@ -292,3 +249,38 @@ export const Edit = () => {
     </div>
   );
 };
+
+// const TextForm = (props: {
+//   labelText: string;
+//   variableName: keyof CardInterface;
+// }) => {
+//   return (
+//     <div className="form-group">
+//       <label htmlFor={props.variableName}>{props.labelText}:</label>
+//       <input
+//         type="text"
+//         className="form-control"
+//         name={props.variableName}
+//         value={card[props.variableName] as string}
+//         onChange={onChange}
+//       />
+//     </div>
+//   );
+// };
+// const NumberForm = (props: {
+//   labelText: string;
+//   variableName: keyof CardInterface;
+// }) => {
+//   return (
+//     <div className="form-group">
+//       <label htmlFor={props.variableName}>{props.labelText}:</label>
+//       <input
+//         type="number"
+//         className="form-control"
+//         name={props.variableName}
+//         value={card[props.variableName] as number}
+//         onChange={onChange}
+//       />
+//     </div>
+//   );
+// };

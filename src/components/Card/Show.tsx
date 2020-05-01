@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState, useEffect } from "react";
-import firebase from "../Firebase";
+import firebase from "../../Firebase";
 import { Link, useHistory, useParams } from "react-router-dom";
-import { CardInterface } from "../interface/CardInterface";
-import "../css/style.css";
+import { CardInterface } from "../../interface/CardInterface";
+import "../../css/style.css";
 
 export const Show = () => {
   const [card, setCard] = useState<CardInterface | null>();

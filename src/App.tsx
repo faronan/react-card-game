@@ -2,9 +2,9 @@
 import React from "react";
 import { Route, Switch } from "react-router-dom";
 import "./App.css";
-import { Edit } from "./components/Edit";
-import { Create } from "./components/Create";
-import { Show } from "./components/Show";
+import { Edit } from "./components/Card/Edit";
+import { Create } from "./components/Card/Create";
+import { Show } from "./components/Card/Show";
 import { Home } from "./components/Home";
 import firebase from "./Firebase";
 
