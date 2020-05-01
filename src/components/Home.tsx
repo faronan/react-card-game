@@ -44,6 +44,9 @@ export const Home = () => {
             <Link to="/create" className="btn btn-primary">
               Create Card
             </Link>
+            <Link to="/deck" className="btn btn-success">
+              Deck List
+            </Link>
           </h4>
           <table className="table table-stripe">
             <thead>

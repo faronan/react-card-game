@@ -6,7 +6,10 @@ import { Edit } from "./components/Card/Edit";
 import { Create } from "./components/Card/Create";
 import { Show } from "./components/Card/Show";
 import { Home } from "./components/Home";
-import firebase from "./Firebase";
+import { Deck } from "./components/Deck/Deck";
+import { DeckEdit } from "./components/Deck/DeckEdit";
+import { DeckCreate } from "./components/Deck/DeckCreate";
+import { DeckShow } from "./components/Deck/DeckShow";
 
 const NotFound = () => {
   return <h2>ページが見つかりません</h2>;
@@ -20,6 +23,10 @@ function App() {
         <Route path="/edit" component={Edit} />
         <Route path="/create" component={Create} />
         <Route path="/show" component={Show} />
+        <Route path="/deck" component={Deck} />
+        <Route path="/deck/edit" component={DeckEdit} />
+        <Route path="/deck/create" component={DeckCreate} />
+        <Route path="/deck/show" component={DeckShow} />
         <Route component={NotFound} />
       </Switch>
     </div>
