@@ -116,3 +116,39 @@ p {
   font-size: 2em;
   margin-top: 60%;
 }
+
+.top-banner {
+  display: flex;
+  flex-wrap: wrap;
+}
+.top-banner li {
+  list-style: none;
+  width: calc(100% / 10); /*←画像を横に4つ並べる場合*/
+  padding: 0 5px; /*←画像の左右に5pxの余白を入れる場合*/
+  box-sizing: border-box;
+}
+.top-banner li img {
+  max-width: 100%; /*画像のはみだしを防ぐ*/
+  height: auto; /*画像の縦横比を維持 */
+}
+
+.batsu {
+  font-size: 50%; /*ボタンの大きさ*/
+  font-weight: bold;
+  border: 1px solid #999;
+  color: #999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 100%;
+  width: 1.3em;
+  line-height: 1.3em;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.batsu:hover {
+  background: #333;
+  border-color: #333;
+  color: #fff;
+}

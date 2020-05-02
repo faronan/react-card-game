@@ -1,13 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState } from "react";
 import firebase from "../../Firebase";
-import { Link, useHistory, useLocation } from "react-router-dom";
-import {
-  CardInterface,
-  cardColors,
-  supportEffects,
-  cardtags,
-} from "../../interface/CardInterface";
+import { Link, useLocation } from "react-router-dom";
+import { CardInterface } from "../../interface/CardInterface";
+import "../../css/style.css";
 
 export const Deck = () => {
   const location = useLocation();
@@ -18,6 +14,7 @@ export const Deck = () => {
   const cards = state["cards"];
 
   const [values, setValues] = useState<{ [key: string]: number }>({});
+  const [deck, setDeck] = useState<{ [key: string]: number }>({});
 
   const onChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setValues({ ...values, [e.target.name]: Number(e.target.value) });
@@ -25,9 +22,21 @@ export const Deck = () => {
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    //values[e.currentTarget.name]を反映させる
-    //console.log(values[e.currentTarget.name]);
+    const key = e.currentTarget.name;
+    setDeck({ ...deck, [key]: (deck[key] || 0) + (values[key] || 1) });
   };
+
+  const onCardClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    const key = e.currentTarget.value;
+    setDeck({ ...deck, [key]: deck[key] - 1 });
+  };
+
+  const deckCardArray: CardInterface[] = Object.entries(deck)
+    .map(([cardId, count]) => {
+      const card = cards.find((card) => card.id.toString() === cardId);
+      return Array(count).fill(card!);
+    })
+    .flat();
 
   return (
     <div className="container">
@@ -56,7 +65,7 @@ export const Deck = () => {
                         <td>
                           <form onSubmit={onSubmit} name={key}>
                             <select
-                              value={values[key] || 1}
+                              value={values[key]}
                               name={key}
                               onChange={onChange}
                             >
@@ -79,7 +88,21 @@ export const Deck = () => {
                 </tbody>
               </table>
             </div>
-            <div className="col-sm-4">hoge</div>
+            <ul className="col-sm-8 top-banner">
+              {deckCardArray.map((card, index) => (
+                <li key={index}>
+                  {/*本当はindexにするのは良くないけど思いつかないので一旦...*/}
+                  <button
+                    className="batsu"
+                    value={card.id}
+                    onClick={onCardClick}
+                  >
+                    ×
+                  </button>
+                  <img src={card.image} alt="" />
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
       </div>
