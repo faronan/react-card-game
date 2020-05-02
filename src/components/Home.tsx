@@ -12,6 +12,7 @@ export const Home = () => {
       firebase
         .firestore()
         .collection("cards")
+        .orderBy("id")
         .get()
         .then((querySnapshot) => {
           const cards = querySnapshot.docs.map((doc) => {
@@ -44,7 +45,13 @@ export const Home = () => {
             <Link to="/create" className="btn btn-primary">
               Create Card
             </Link>
-            <Link to="/deck" className="btn btn-success">
+            <Link
+              to={{
+                pathname: `/deck`,
+                state: { cards },
+              }}
+              className="btn btn-success"
+            >
               Deck List
             </Link>
           </h4>
