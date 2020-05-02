@@ -4,6 +4,7 @@ import firebase from "../../Firebase";
 import { Link, useLocation } from "react-router-dom";
 import { CardInterface } from "../../interface/CardInterface";
 import "../../css/style.css";
+import { DeckEdit } from "./DeckEdit";
 
 export const Deck = () => {
   const location = useLocation();
@@ -25,18 +26,6 @@ export const Deck = () => {
     const key = e.currentTarget.name;
     setDeck({ ...deck, [key]: (deck[key] || 0) + (values[key] || 1) });
   };
-
-  const onCardClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    const key = e.currentTarget.value;
-    setDeck({ ...deck, [key]: deck[key] - 1 });
-  };
-
-  const deckCardArray: CardInterface[] = Object.entries(deck)
-    .map(([cardId, count]) => {
-      const card = cards.find((card) => card.id.toString() === cardId);
-      return Array(count).fill(card!);
-    })
-    .flat();
 
   return (
     <div className="container">
@@ -88,21 +77,7 @@ export const Deck = () => {
                 </tbody>
               </table>
             </div>
-            <ul className="col-sm-8 top-banner">
-              {deckCardArray.map((card, index) => (
-                <li key={index}>
-                  {/*本当はindexにするのは良くないけど思いつかないので一旦...*/}
-                  <button
-                    className="batsu"
-                    value={card.id}
-                    onClick={onCardClick}
-                  >
-                    ×
-                  </button>
-                  <img src={card.image} alt="" />
-                </li>
-              ))}
-            </ul>
+            <DeckEdit cards={cards}></DeckEdit>
           </div>
         </div>
       </div>
