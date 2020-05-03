@@ -1,48 +1,92 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState } from "react";
 import firebase from "../../Firebase";
-import { Link, useHistory, useLocation } from "react-router-dom";
-import {
-  CardInterface,
-  cardColors,
-  supportEffects,
-  cardtags,
-} from "../../interface/CardInterface";
+import { Collapse, CardBody, Card } from "reactstrap";
+import { CardInterface } from "../../interface/CardInterface";
+import { DeckInterface } from "../../interface/DeckInterface";
+import { useHistory } from "react-router-dom";
 
-export const DeckEdit = (props: { cards: CardInterface[] }) => {
+export const DeckEdit = (props: {
+  cards: CardInterface[];
+  deck: DeckInterface & { key?: string };
+  setDeck: React.Dispatch<React.SetStateAction<DeckInterface>>;
+  addDeck: () => void;
+}) => {
   const cards = props.cards;
-  const [deck, setDeck] = useState<{ [key: string]: number }>({});
+  const deck = props.deck;
+  const setDeck = props.setDeck;
+  //const history = useHistory();
 
   const onCardClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     const key = e.currentTarget.value;
-    setDeck({ ...deck, [key]: deck[key] - 1 });
+    setDeck({
+      ...deck,
+      cardIdCount: {
+        ...deck.cardIdCount,
+        [key]: deck.cardIdCount[key] - 1,
+      },
+    });
   };
 
-  const deckCardArray: CardInterface[] = Object.entries(deck)
+  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setDeck({
+      ...deck,
+      deckName: e.target.value,
+    });
+  };
+
+  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    firebase
+      .firestore()
+      .collection("decks")
+      .add(deck)
+      .then((a) => {})
+      .catch((error) => {
+        console.error(error);
+      });
+    // firebase
+    //   .firestore()
+    //   .collection("decks")
+    //   .doc(deck.key)
+    //   .set(deck)
+    //   .then((a) => {})
+    //   .catch((error) => {
+    //     console.error(error);
+    //   });
+    // history.push({
+    //   pathname: "/deck/#",
+    //   state: { cards: cards },
+    // });
+    props.addDeck();
+    setDeck({
+      deckName: "",
+      cardIdCount: {},
+    });
+  };
+
+  const deckCardArray: CardInterface[] = Object.entries(deck.cardIdCount)
     .map(([cardId, count]) => {
       const card = cards.find((card) => card.id.toString() === cardId);
       return Array(count).fill(card!);
     })
     .flat();
 
-  const handleClick = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
-    e.preventDefault();
-    console.log("The link was clicked.");
-  };
   return (
-    <div className="col-sm-8">
-      <div className="col-sm-6">
-        <a href="#" onClick={handleClick}>
-          ▼ クリックで展開
-        </a>
-      </div>
-      <form className="form-inline">
+    <div>
+      <form className="form-inline" onSubmit={onSubmit}>
         <div className="form-group">
           <label htmlFor="char_name" className="col-form-label">
             デッキ名:
           </label>
           <div className="col-sm-4">
-            <input type="text" className="form-control" name="char_name" />
+            <input
+              type="text"
+              className="form-control"
+              value={deck.deckName}
+              onChange={onChange}
+            />
           </div>
         </div>
         <button type="submit" className="btn btn-primary">
