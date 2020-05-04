@@ -26,3 +26,6 @@ firebase-debug.log*
 
 # images
 public/images/
+
+# firebase
+.firebase
