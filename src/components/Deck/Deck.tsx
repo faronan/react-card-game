@@ -95,7 +95,7 @@ export const Deck = () => {
                     return (
                       <tr key={card.id}>
                         <td>
-                          <img src={card.image} alt="" />
+                          <img src={card.image} alt="" className="list-image" />
                         </td>
                         <td>
                           <form onSubmit={onSubmit} name={key}>

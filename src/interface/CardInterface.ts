@@ -28,6 +28,8 @@ export const supportEffects = {
   PRAY: "祈り",
   HERO: "英雄",
   DORAGON: "竜人",
+  STRATEGY: "計略",
+  BANDIT: "盗賊",
 } as const;
 type SupportEffects = typeof supportEffects[keyof typeof supportEffects];
 

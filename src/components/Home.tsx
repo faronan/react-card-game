@@ -1,23 +1,33 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState, useEffect } from "react";
 import firebase from "../Firebase";
+import Pagination from "react-js-pagination";
 import { Link } from "react-router-dom";
 import { CardInterface } from "../interface/CardInterface";
 import "../css/style.css";
 
 export const Home = () => {
+  const LIMIT = 10;
   const [cards, setCards] = useState<(CardInterface & { key: string })[]>([]);
+  const [page, setPage] = useState(1);
+
+  const handlePageChange = (pageNumber: number) => {
+    setPage(pageNumber);
+  };
+
   useEffect(() => {
     (async () => {
       firebase
         .firestore()
         .collection("cards")
-        .orderBy("id")
         .get()
         .then((querySnapshot) => {
           const cards = querySnapshot.docs.map((doc) => {
             const data = doc.data() as CardInterface;
             return { ...data, key: doc.id };
+          });
+          cards.sort((a: CardInterface, b: CardInterface) => {
+            return a.id - b.id;
           });
           setCards(cards);
         });
@@ -55,6 +65,18 @@ export const Home = () => {
               Deck List
             </Link>
           </h4>
+
+          <div className="text-center">
+            <Pagination
+              activePage={page}
+              itemsCountPerPage={LIMIT}
+              totalItemsCount={cards.length}
+              pageRangeDisplayed={5}
+              onChange={(pageNumber) => handlePageChange(pageNumber)}
+              itemClass="page-item"
+              linkClass="page-link"
+            />
+          </div>
           <table className="table table-stripe">
             <thead>
               <tr>
@@ -71,7 +93,7 @@ export const Home = () => {
               </tr>
             </thead>
             <tbody>
-              {cards.map((card) => (
+              {cards.slice((page - 1) * LIMIT, page * LIMIT).map((card) => (
                 <tr key={card.id}>
                   <td>
                     <Link
@@ -84,7 +106,7 @@ export const Home = () => {
                     </Link>
                   </td>
                   <td>
-                    <img src={`${card.image}`} alt="" />
+                    <img src={`${card.image}`} alt="" className="list-image" />
                   </td>
                   <td>{card.color}</td>
                   <td>{card.char_name}</td>
@@ -98,6 +120,17 @@ export const Home = () => {
               ))}
             </tbody>
           </table>
+          <div className="text-center">
+            <Pagination
+              activePage={page}
+              itemsCountPerPage={LIMIT}
+              totalItemsCount={cards.length}
+              pageRangeDisplayed={5}
+              onChange={(pageNumber) => handlePageChange(pageNumber)}
+              itemClass="page-item"
+              linkClass="page-link"
+            />
+          </div>
         </div>
       </div>
     </div>

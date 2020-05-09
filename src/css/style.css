@@ -156,3 +156,12 @@ p {
 .h-margine {
   margin-top: 20px;
 }
+
+.list-image {
+  width: 30%;
+  height: auto;
+}
+
+.pagination {
+  display: inline-flex;
+}
