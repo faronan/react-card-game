@@ -10,7 +10,7 @@ export const DeckEdit = (props: {
   cards: CardInterface[];
   deck: DeckInterface & { key?: string };
   setDeck: React.Dispatch<React.SetStateAction<DeckInterface>>;
-  addDeck: () => void;
+  addDeck: (key: string) => void;
 }) => {
   const cards = props.cards;
   const deck = props.deck;
@@ -42,7 +42,16 @@ export const DeckEdit = (props: {
       .firestore()
       .collection("decks")
       .add(deck)
-      .then((a) => {})
+      .then((docRef) => {
+        const key = docRef.id;
+        props.addDeck(key);
+        const initialDeck: DeckInterface = {
+          deckName: "",
+          cardIdCount: {},
+          HeroCardId: 0,
+        };
+        setDeck(initialDeck);
+      })
       .catch((error) => {
         console.error(error);
       });
@@ -59,18 +68,11 @@ export const DeckEdit = (props: {
     //   pathname: "/deck/#",
     //   state: { cards: cards },
     // });
-    props.addDeck();
-    const initialDeck: DeckInterface = {
-      deckName: "",
-      cardIdCount: {},
-      HeroCardId: 0,
-    };
-    setDeck(initialDeck);
   };
 
   const heroCardValidate = (cardId: number) => {
     const card = cards.find((card) => Number(card.id) === cardId);
-    return card != undefined && Number(card.cost) === 1;
+    return card !== undefined && Number(card.cost) === 1;
   };
 
   const onCardClick = (e: React.MouseEvent<HTMLImageElement, MouseEvent>) => {
@@ -141,8 +143,8 @@ export const DeckEdit = (props: {
                   className="outer"
                   fill="#F9D535"
                   stroke="#fff"
-                  stroke-width="8"
-                  stroke-linecap="round"
+                  strokeWidth="8"
+                  strokeLinecap="round"
                   cx="180"
                   cy="180"
                   r="157"
@@ -151,7 +153,7 @@ export const DeckEdit = (props: {
                   className="inner"
                   fill="#DFB828"
                   stroke="#fff"
-                  stroke-width="8"
+                  strokeWidth="8"
                   cx="180"
                   cy="180"
                   r="108.3"
@@ -160,25 +162,25 @@ export const DeckEdit = (props: {
                   className="inline"
                   d="M89.4 276.7c-26-24.2-42.2-58.8-42.2-97.1 0-22.6 5.6-43.8 15.5-62.4m234.7.1c9.9 18.6 15.4 39.7 15.4 62.2 0 38.3-16.2 72.8-42.1 97"
                   stroke="#CAA61F"
-                  stroke-width="7"
-                  stroke-linecap="round"
+                  strokeWidth="7"
+                  strokeLinecap="round"
                   fill="none"
                 />
                 <g className="star">
                   <path
                     fill="#F9D535"
                     stroke="#fff"
-                    stroke-width="4"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
+                    strokeWidth="4"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
                     d="M180 107.8l16.9 52.1h54.8l-44.3 32.2 16.9 52.1-44.3-32.2-44.3 32.2 16.9-52.1-44.3-32.2h54.8z"
                   />
                   <circle
                     fill="#DFB828"
                     stroke="#fff"
-                    stroke-width="4"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
+                    strokeWidth="4"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
                     cx="180"
                     cy="107.8"
                     r="4.4"
@@ -186,9 +188,9 @@ export const DeckEdit = (props: {
                   <circle
                     fill="#DFB828"
                     stroke="#fff"
-                    stroke-width="4"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
+                    strokeWidth="4"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
                     cx="223.7"
                     cy="244.2"
                     r="4.4"
@@ -196,9 +198,9 @@ export const DeckEdit = (props: {
                   <circle
                     fill="#DFB828"
                     stroke="#fff"
-                    stroke-width="4"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
+                    strokeWidth="4"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
                     cx="135.5"
                     cy="244.2"
                     r="4.4"
@@ -206,9 +208,9 @@ export const DeckEdit = (props: {
                   <circle
                     fill="#DFB828"
                     stroke="#fff"
-                    stroke-width="4"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
+                    strokeWidth="4"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
                     cx="108.3"
                     cy="160.4"
                     r="4.4"
@@ -216,9 +218,9 @@ export const DeckEdit = (props: {
                   <circle
                     fill="#DFB828"
                     stroke="#fff"
-                    stroke-width="4"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
+                    strokeWidth="4"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
                     cx="251.7"
                     cy="160.4"
                     r="4.4"

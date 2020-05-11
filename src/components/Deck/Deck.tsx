@@ -51,8 +51,13 @@ export const Deck = () => {
     });
   };
 
-  const addDeck = () => {
-    setDecks([...decks, newDeck]);
+  const addDeck = (key: string) => {
+    setDecks([...decks, { ...newDeck, key: key }]);
+  };
+
+  const deleteDeck = (deck: DeckInterface) => {
+    const deletedAfterDecks = decks.filter((d) => d !== deck);
+    setDecks(deletedAfterDecks);
   };
 
   useEffect(() => {
@@ -153,8 +158,12 @@ export const Deck = () => {
             <div className="col-sm-8">
               <ul className="list-group">
                 {decks.map((d) => (
-                  <li className={"list-group-item"}>
-                    <DeckDetail cards={cards} deck={d}></DeckDetail>
+                  <li className={"list-group-item"} key={d.key}>
+                    <DeckDetail
+                      cards={cards}
+                      deck={d}
+                      deleteDeck={deleteDeck}
+                    ></DeckDetail>
                   </li>
                 ))}
               </ul>

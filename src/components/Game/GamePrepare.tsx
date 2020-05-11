@@ -133,11 +133,13 @@ export const GamePrepare = () => {
                       >
                         <h4>デッキ一覧</h4>
                         <ListGroup>
-                          {decks.map((deck) => (
+                          {/* 本当はindexは良くないけどry */}
+                          {decks.map((deck, index) => (
                             <ListGroupItem
                               action
                               onClick={() => myDeckChoice(deck)}
                               className="border-warning"
+                              key={index}
                             >
                               <div className="d-flex w-100 justify-content-between">
                                 <h5 className="mb-1"> {deck.deckName}</h5>
@@ -168,7 +170,7 @@ export const GamePrepare = () => {
                       <img src={myDeckImage} className="card-img" alt="..." />
                     ) : (
                       <svg
-                        className="bd-placeholder-img card-img-top"
+                        className="bd-placeholder-img card-img"
                         width="100%"
                         height="261.19"
                         xmlns="http://www.w3.org/2000/svg"
@@ -209,11 +211,12 @@ export const GamePrepare = () => {
                       >
                         <h4>デッキ一覧</h4>
                         <ListGroup>
-                          {decks.map((deck) => (
+                          {decks.map((deck, index) => (
                             <ListGroupItem
                               action
                               onClick={() => EnemyDeckChoice(deck)}
                               className="border-warning"
+                              key={index}
                             >
                               <div className="d-flex w-100 justify-content-between">
                                 <h5 className="mb-1"> {deck.deckName}</h5>
