@@ -2,4 +2,5 @@
 export interface DeckInterface {
   deckName: string;
   cardIdCount: { [key: string]: number };
+  HeroCardId: number;
 }

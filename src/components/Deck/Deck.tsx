@@ -7,6 +7,7 @@ import "../../css/style.css";
 import { DeckEdit } from "./DeckEdit";
 import { DeckInterface } from "../../interface/DeckInterface";
 import { DeckDetail } from "./DeckDetail";
+import Pagination from "react-js-pagination";
 
 export const Deck = () => {
   const location = useLocation();
@@ -19,12 +20,20 @@ export const Deck = () => {
   const initialDeck: DeckInterface = {
     deckName: "",
     cardIdCount: {},
+    HeroCardId: 0,
   };
 
+  const LIMIT = 10;
+
   const [values, setValues] = useState<{ [key: string]: number }>({});
-  const [deck, setDeck] = useState<DeckInterface>(initialDeck);
+  const [newDeck, setNewDeck] = useState<DeckInterface>(initialDeck);
   const [decks, setDecks] = useState<(DeckInterface & { key?: string })[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [page, setPage] = useState(1);
+
+  const handlePageChange = (pageNumber: number) => {
+    setPage(pageNumber);
+  };
 
   const onChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setValues({ ...values, [e.target.name]: Number(e.target.value) });
@@ -33,17 +42,17 @@ export const Deck = () => {
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const key = e.currentTarget.name;
-    setDeck({
-      ...deck,
+    setNewDeck({
+      ...newDeck,
       cardIdCount: {
-        ...deck.cardIdCount,
-        [key]: (deck.cardIdCount[key] || 0) + (values[key] || 1),
+        ...newDeck.cardIdCount,
+        [key]: (newDeck.cardIdCount[key] || 0) + (values[key] || 1),
       },
     });
   };
 
   const addDeck = () => {
-    setDecks([...decks, deck]);
+    setDecks([...decks, newDeck]);
   };
 
   useEffect(() => {
@@ -85,12 +94,21 @@ export const Deck = () => {
           </h4>
           <div className="row">
             <div className="col-sm-4 table-responsive">
+              <Pagination
+                activePage={page}
+                itemsCountPerPage={LIMIT}
+                totalItemsCount={cards.length}
+                pageRangeDisplayed={5}
+                onChange={(pageNumber) => handlePageChange(pageNumber)}
+                itemClass="page-item"
+                linkClass="page-link"
+              />
               <table className="table table-stripe">
                 <thead>
                   <tr></tr>
                 </thead>
                 <tbody>
-                  {cards.map((card) => {
+                  {cards.slice((page - 1) * LIMIT, page * LIMIT).map((card) => {
                     const key = card.id.toString();
                     return (
                       <tr key={card.id}>
@@ -122,6 +140,15 @@ export const Deck = () => {
                   })}
                 </tbody>
               </table>
+              <Pagination
+                activePage={page}
+                itemsCountPerPage={LIMIT}
+                totalItemsCount={cards.length}
+                pageRangeDisplayed={5}
+                onChange={(pageNumber) => handlePageChange(pageNumber)}
+                itemClass="page-item"
+                linkClass="page-link"
+              />
             </div>
             <div className="col-sm-8">
               <ul className="list-group">
@@ -136,8 +163,8 @@ export const Deck = () => {
               </div>
               <DeckEdit
                 cards={cards}
-                deck={deck}
-                setDeck={setDeck}
+                deck={newDeck}
+                setDeck={setNewDeck}
                 addDeck={addDeck}
               ></DeckEdit>
             </div>

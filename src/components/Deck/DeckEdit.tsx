@@ -1,11 +1,10 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React, { useState } from "react";
+import React from "react";
 import firebase from "../../Firebase";
-import { Collapse, CardBody, Card } from "reactstrap";
 import { CardInterface } from "../../interface/CardInterface";
 import { DeckInterface } from "../../interface/DeckInterface";
-import { useHistory } from "react-router-dom";
+import "../../css/style.css";
 
 export const DeckEdit = (props: {
   cards: CardInterface[];
@@ -16,9 +15,10 @@ export const DeckEdit = (props: {
   const cards = props.cards;
   const deck = props.deck;
   const setDeck = props.setDeck;
-  //const history = useHistory();
 
-  const onCardClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+  const onCardDeleteClick = (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
     const key = e.currentTarget.value;
     setDeck({
       ...deck,
@@ -60,10 +60,28 @@ export const DeckEdit = (props: {
     //   state: { cards: cards },
     // });
     props.addDeck();
-    setDeck({
+    const initialDeck: DeckInterface = {
       deckName: "",
       cardIdCount: {},
-    });
+      HeroCardId: 0,
+    };
+    setDeck(initialDeck);
+  };
+
+  const heroCardValidate = (cardId: number) => {
+    const card = cards.find((card) => Number(card.id) === cardId);
+    return card != undefined && Number(card.cost) === 1;
+  };
+
+  const onCardClick = (e: React.MouseEvent<HTMLImageElement, MouseEvent>) => {
+    e.preventDefault();
+    const cardId = Number(e.currentTarget.getAttribute("data-item"));
+    if (heroCardValidate(cardId)) {
+      setDeck({
+        ...deck,
+        HeroCardId: cardId,
+      });
+    }
   };
 
   const deckCardArray: CardInterface[] = Object.entries(deck.cardIdCount)
@@ -95,12 +113,119 @@ export const DeckEdit = (props: {
       </form>
       <ul className="top-banner">
         {deckCardArray.map((card, index) => (
-          <li key={index}>
+          <li key={index} className="deck-card-base">
             {/*本当はindexにするのは良くないけど思いつかないので一旦...*/}
-            <button className="batsu" value={card.id} onClick={onCardClick}>
+            <button
+              className="batsu"
+              value={card.id}
+              onClick={onCardDeleteClick}
+            >
               ×
             </button>
-            <img src={card.image} alt="" />
+            <img
+              src={card.image}
+              alt=""
+              onClick={onCardClick}
+              data-item={card.id}
+            />
+            {Number(card.id) === deck.HeroCardId && (
+              // <span className="badge badge-danger badge-pill ">
+              //   主人公
+              // </span>
+              <svg
+                className="badge-edit"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="-40 -40 440 440"
+              >
+                <circle
+                  className="outer"
+                  fill="#F9D535"
+                  stroke="#fff"
+                  stroke-width="8"
+                  stroke-linecap="round"
+                  cx="180"
+                  cy="180"
+                  r="157"
+                />
+                <circle
+                  className="inner"
+                  fill="#DFB828"
+                  stroke="#fff"
+                  stroke-width="8"
+                  cx="180"
+                  cy="180"
+                  r="108.3"
+                />
+                <path
+                  className="inline"
+                  d="M89.4 276.7c-26-24.2-42.2-58.8-42.2-97.1 0-22.6 5.6-43.8 15.5-62.4m234.7.1c9.9 18.6 15.4 39.7 15.4 62.2 0 38.3-16.2 72.8-42.1 97"
+                  stroke="#CAA61F"
+                  stroke-width="7"
+                  stroke-linecap="round"
+                  fill="none"
+                />
+                <g className="star">
+                  <path
+                    fill="#F9D535"
+                    stroke="#fff"
+                    stroke-width="4"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M180 107.8l16.9 52.1h54.8l-44.3 32.2 16.9 52.1-44.3-32.2-44.3 32.2 16.9-52.1-44.3-32.2h54.8z"
+                  />
+                  <circle
+                    fill="#DFB828"
+                    stroke="#fff"
+                    stroke-width="4"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    cx="180"
+                    cy="107.8"
+                    r="4.4"
+                  />
+                  <circle
+                    fill="#DFB828"
+                    stroke="#fff"
+                    stroke-width="4"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    cx="223.7"
+                    cy="244.2"
+                    r="4.4"
+                  />
+                  <circle
+                    fill="#DFB828"
+                    stroke="#fff"
+                    stroke-width="4"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    cx="135.5"
+                    cy="244.2"
+                    r="4.4"
+                  />
+                  <circle
+                    fill="#DFB828"
+                    stroke="#fff"
+                    stroke-width="4"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    cx="108.3"
+                    cy="160.4"
+                    r="4.4"
+                  />
+                  <circle
+                    fill="#DFB828"
+                    stroke="#fff"
+                    stroke-width="4"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    cx="251.7"
+                    cy="160.4"
+                    r="4.4"
+                  />
+                </g>
+              </svg>
+            )}
           </li>
         ))}
       </ul>
