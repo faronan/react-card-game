@@ -64,6 +64,15 @@ export const Home = () => {
             >
               Deck List
             </Link>
+            <Link
+              to={{
+                pathname: `/game/prepare`,
+                state: { cards },
+              }}
+              className="btn btn-warning"
+            >
+              ゲーム準備
+            </Link>
           </h4>
 
           <div className="text-center">
