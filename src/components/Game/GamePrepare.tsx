@@ -33,8 +33,8 @@ export const GamePrepare = () => {
 
   const [modalMyDeckIsOpen, setMyDeckIsOpen] = React.useState(false);
   const [modalEnemyDeckIsOpen, setEnemyDeckIsOpen] = React.useState(false);
-  const [myDeckImage, setMyDeckImage] = React.useState("");
-  const [enemyDeckImage, setEnemyDeckImage] = React.useState("");
+  const [myDeck, setMyDeck] = React.useState<DeckInterface>();
+  const [enemyDeck, setEnemyDeck] = React.useState<DeckInterface>();
 
   const openMyDeckModal = () => {
     setMyDeckIsOpen(true);
@@ -53,19 +53,13 @@ export const GamePrepare = () => {
   };
 
   const myDeckChoice = (deck: DeckInterface) => {
-    const card = cards.find((c) => Number(c.id) === deck.HeroCardId);
-    if (card) {
-      setMyDeckImage(card.image);
-      closeMyDeckModal();
-    }
+    setMyDeck(deck);
+    closeMyDeckModal();
   };
 
   const EnemyDeckChoice = (deck: DeckInterface) => {
-    const card = cards.find((c) => Number(c.id) === deck.HeroCardId);
-    if (card) {
-      setEnemyDeckImage(card.image);
-      closeEnemyDeckModal();
-    }
+    setEnemyDeck(deck);
+    closeEnemyDeckModal();
   };
 
   const getDeckCardImage = (deck: DeckInterface) => {
@@ -166,8 +160,12 @@ export const GamePrepare = () => {
                     </div>
                   </div>
                   <div className="col-md-5">
-                    {myDeckImage ? (
-                      <img src={myDeckImage} className="card-img" alt="..." />
+                    {myDeck ? (
+                      <img
+                        src={getDeckCardImage(myDeck)}
+                        className="card-img"
+                        alt="..."
+                      />
                     ) : (
                       <svg
                         className="bd-placeholder-img card-img"
@@ -243,9 +241,9 @@ export const GamePrepare = () => {
                     </div>
                   </div>
                   <div className="col-md-5">
-                    {enemyDeckImage ? (
+                    {enemyDeck ? (
                       <img
-                        src={enemyDeckImage}
+                        src={getDeckCardImage(enemyDeck)}
                         className="card-img"
                         alt="..."
                       />
@@ -273,8 +271,8 @@ export const GamePrepare = () => {
           </div>
           <Link
             to={{
-              pathname: `/game/prepare`,
-              state: { cards },
+              pathname: `/game`,
+              state: { cards, myDeck, enemyDeck },
             }}
             className="btn btn-warning"
           >

@@ -1,0 +1,145 @@
+.bonds {
+  margin-top: 10px;
+}
+
+.card_ {
+  width: 10%;
+  height: auto;
+}
+
+.card_done {
+  width: 10%;
+  height: auto;
+  transform: rotate(-90deg);
+}
+
+.orb {
+  padding-left: inherit;
+}
+
+.my_player {
+  position: relative;
+}
+
+.enemy_player {
+  position: relative;
+}
+
+.play_sheet {
+  width: 50%;
+  height: auto;
+}
+
+.enemy_play_sheet {
+  width: 50%;
+  height: auto;
+  transform: scale(-1, -1);
+}
+
+.enemy_deck {
+  position: absolute;
+  top: 50%;
+  left: 3%;
+}
+
+.enemy_flont_field {
+  position: absolute;
+  top: 68%;
+  left: 15%;
+  width: 70%;
+  height: 30%;
+}
+
+.enemy_back_field {
+  position: absolute;
+  top: 38%;
+  left: 15%;
+  width: 70%;
+  height: 30%;
+}
+
+.enemy_bonds {
+  position: absolute;
+  top: 19%;
+  left: 17%;
+  width: 70%;
+  height: 17%;
+}
+
+.enemy_support {
+  position: absolute;
+  top: 80%;
+  left: 3%;
+  width: 10%;
+  height: 17%;
+}
+
+.enemy_evacuation {
+  position: absolute;
+  top: 20%;
+  left: -5%;
+  width: 10%;
+  height: 17%;
+}
+
+.enemy_orb {
+  position: absolute;
+  top: 18%;
+  left: 87.5%;
+  width: 10%;
+  height: 40%;
+}
+
+.my_deck {
+  position: absolute;
+  top: 30%;
+  left: 88%;
+}
+
+.my_flont_field {
+  position: absolute;
+  top: 0%;
+  left: 15%;
+  width: 70%;
+  height: 30%;
+}
+
+.my_back_field {
+  position: absolute;
+  top: 30%;
+  left: 15%;
+  width: 70%;
+  height: 30%;
+}
+
+.my_bonds {
+  position: absolute;
+  top: 63%;
+  left: 13%;
+  width: 70%;
+  height: 17%;
+}
+
+.my_support {
+  position: absolute;
+  top: 3%;
+  left: 87%;
+  width: 10%;
+  height: 17%;
+}
+
+.my_evacuation {
+  position: absolute;
+  top: 58%;
+  left: 79%;
+  width: 10%;
+  height: 17%;
+}
+
+.my_orb {
+  position: absolute;
+  top: 0%;
+  left: 2%;
+  width: 10%;
+  height: 40%;
+}

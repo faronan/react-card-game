@@ -8,6 +8,7 @@ import { Show } from "./components/Card/Show";
 import { Home } from "./components/Home";
 import { Deck } from "./components/Deck/Deck";
 import { GamePrepare } from "./components/Game/GamePrepare";
+import { Game } from "./components/Game/Game";
 
 const NotFound = () => {
   return <h2>ページが見つかりません</h2>;
@@ -23,6 +24,7 @@ function App() {
         <Route path="/show" component={Show} />
         <Route path="/deck" component={Deck} />
         <Route path="/game/prepare" component={GamePrepare} />
+        <Route path="/game" component={Game} />
         <Route component={NotFound} />
       </Switch>
     </div>
