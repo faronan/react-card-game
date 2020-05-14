@@ -1,5 +1,4 @@
 /* eslint-disable no-unused-vars */
-
 import { confirmAlert } from "react-confirm-alert"; // Import
 import "react-confirm-alert/src/react-confirm-alert.css"; // Import css
 import { playerController } from "./playerController";
@@ -8,23 +7,25 @@ import { selectedTypeInterface } from "../interface/SelectedTypeInterface";
 import {
   GameCardStatusInterface,
   CardStatus,
+  CardLocation,
 } from "../interface/GameCardStatusInterface";
+import { gameCardController } from "./GameCardController";
 
 export class GameManager {
-  //自プレイヤーの管理
-  playerController: playerController;
-  //敵プレイヤーの管理
-  enemyPlayerController: playerController;
+  //自プレイヤーのカード
+  playerCards: gameCardController;
+  //敵プレイヤーのカード
+  enemyPlayerCards: gameCardController;
   //操作を記録
   operatedController: operatedController;
 
   constructor(
-    playerController?: playerController,
-    enemyPlayerController?: playerController,
+    playerCards?: gameCardController,
+    enemyPlayerCards?: gameCardController,
     operatedController?: operatedController
   ) {
-    this.playerController = playerController!;
-    this.enemyPlayerController = enemyPlayerController!;
+    this.playerCards = playerCards!;
+    this.enemyPlayerCards = enemyPlayerCards!;
     this.operatedController = operatedController!;
   }
 
@@ -43,16 +44,16 @@ export class GameManager {
       switch (type) {
         //手札から選択した時
         case selectedTypeInterface.HAND:
-          this.handChoice(card);
+          this.handCardChoice(card);
           break;
         case selectedTypeInterface.FIELD_FRONT_CARD:
-          this.fieldFrontChoice(card);
+          this.fieldFrontCardChoice(card);
           break;
         case selectedTypeInterface.FIELD_BACK_CARD:
-          this.fieldBackChoice(card);
+          this.fieldBackCardChoice(card);
           break;
         case selectedTypeInterface.ORB_CARD:
-          this.orbChoice(card, isEnemy);
+          this.orbCardChoice(card, isEnemy);
           break;
         default:
           break;
@@ -82,48 +83,98 @@ export class GameManager {
   }
 
   // 最初にこの関数を通すことで他の処理を共通化する
-  getPlayerController(isEnemy: boolean) {
+  getPlayerCards(isEnemy: boolean) {
     if (isEnemy) {
-      return this.enemyPlayerController;
+      return this.enemyPlayerCards.playerCards;
     } else {
-      return this.playerController;
+      return this.playerCards.playerCards;
     }
   }
 
+  setPlaterCards(card: GameCardStatusInterface, isEnemy: boolean) {
+    const otherCard = this.getPlayerCards(isEnemy).filter(
+      (c) => c.id !== card.id || c.card_data !== card.card_data
+    );
+    if (isEnemy) {
+      this.enemyPlayerCards.setPlayerCards([...otherCard, card]);
+    } else {
+      this.playerCards.setPlayerCards([...otherCard, card]);
+    }
+  }
+
+  getPlayerCardById(card: GameCardStatusInterface, isEnemy: boolean) {
+    return this.getPlayerCards(isEnemy).find((c) => c === card)!;
+  }
+
+  getCardLocationFrontOrBack(isEnemy: boolean) {
+    return isEnemy ? CardLocation.FIELD_BACK : CardLocation.FIELD_FRONT;
+  }
+
   getDeck(isEnemy = false) {
-    return this.getPlayerController(isEnemy).deck;
+    return this.getPlayerCards(isEnemy).filter(
+      (c) => c.location === CardLocation.DECK
+    );
   }
 
   getHand(isEnemy = false) {
-    return this.getPlayerController(isEnemy).hand;
+    return this.getPlayerCards(isEnemy).filter(
+      (c) => c.location === CardLocation.HAND
+    );
+  }
+
+  getOrb(isEnemy = false) {
+    return this.getPlayerCards(isEnemy).filter(
+      (c) => c.location === CardLocation.ORB
+    );
+  }
+
+  getEvacuation(isEnemy = false) {
+    return this.getPlayerCards(isEnemy).filter(
+      (c) => c.location === CardLocation.EVACUATION
+    );
+  }
+
+  getBond(isEnemy = false) {
+    return this.getPlayerCards(isEnemy).filter(
+      (c) => c.location === CardLocation.BOND
+    );
   }
 
   getField(isEnemy = false, isBack: boolean) {
     if (isBack) {
-      return this.getPlayerController(isEnemy).field.back;
+      return this.getPlayerCards(isEnemy).filter(
+        (c) => c.location === CardLocation.FIELD_BACK
+      );
     } else {
-      return this.getPlayerController(isEnemy).field.front;
+      return this.getPlayerCards(isEnemy).filter(
+        (c) => c.location === CardLocation.FIELD_FRONT
+      );
     }
   }
 
-  handChoice(card: GameCardStatusInterface) {
+  getSupport(isEnemy = false) {
+    return this.getPlayerCards(isEnemy).find(
+      (c) => c.location === CardLocation.SUPPORT
+    )!;
+  }
+
+  handCardChoice(card: GameCardStatusInterface) {
     this.operatedController.select(selectedTypeInterface.HAND, card);
   }
 
-  fieldFrontChoice(card: GameCardStatusInterface) {
+  fieldFrontCardChoice(card: GameCardStatusInterface) {
     this.operatedController.select(
       selectedTypeInterface.FIELD_FRONT_CARD,
       card
     );
   }
 
-  fieldBackChoice(card: GameCardStatusInterface) {
+  fieldBackCardChoice(card: GameCardStatusInterface) {
     this.operatedController.select(selectedTypeInterface.FIELD_BACK_CARD, card);
   }
 
-  orbChoice(card: GameCardStatusInterface, isEnemy = false) {
-    this.getPlayerController(isEnemy).addHand([card]);
-    this.getPlayerController(isEnemy).removeOrb([card]);
+  orbCardChoice(card: GameCardStatusInterface, isEnemy = false) {
+    this.getPlayerCardById(card, isEnemy).location = CardLocation.HAND;
   }
 
   toField(isEnemy: boolean, isBack = false) {
@@ -134,30 +185,23 @@ export class GameManager {
     this.operatedController.unselect();
 
     // クラスチェンジした場合は早期return
-    const targetField = isBack
-      ? this.getPlayerController(isEnemy).field.back
-      : this.getPlayerController(isEnemy).field.front;
-
-    const basecard = targetField.filter(
-      (f) => f.card_data.char_name === selectedCard.card_data.char_name
+    const classChangeBaseCard = this.getField(isEnemy, isBack).find(
+      (card) => card.card_data.char_name === selectedCard.card_data.char_name
     );
-    if (basecard.length !== 0) {
+
+    if (classChangeBaseCard) {
       const levelUp = () => {
-        if (isBack) {
-          this.getPlayerController(isEnemy).changeBackCard(basecard, [
-            selectedCard,
-          ]);
-        } else {
-          this.getPlayerController(isEnemy).changeFrontCard(basecard, [
-            selectedCard,
-          ]);
-        }
-        this.getPlayerController(isEnemy).removeHand([selectedCard]);
+        this.getPlayerCardById(classChangeBaseCard, isEnemy).location =
+          CardLocation.FIELD_UNDER_CARD;
+        this.getPlayerCardById(
+          selectedCard,
+          isEnemy
+        ).location = this.getCardLocationFrontOrBack(isBack);
       };
       this.createDialog(
         "Confirm",
         "Change 「" +
-          basecard[0].card_data.char_name +
+          classChangeBaseCard.card_data.char_name +
           "」 to 「" +
           selectedCard.card_data.char_name +
           "」",
@@ -169,32 +213,38 @@ export class GameManager {
 
     const fromType = this.operatedController.fromType;
     switch (fromType) {
+      //手札のカードが選択されていた場合
       case selectedTypeInterface.HAND:
         if (this.fromHandValidate(selectedCard, isEnemy, isBack)) {
           return;
         }
-        this.getPlayerController(isEnemy).removeHand([selectedCard]);
-        if (isBack) {
-          this.getPlayerController(isEnemy).addBackField([selectedCard]);
-        } else {
-          this.getPlayerController(isEnemy).addFrontField([selectedCard]);
-        }
+        this.getPlayerCardById(
+          selectedCard,
+          isEnemy
+        ).location = this.getCardLocationFrontOrBack(isBack);
         break;
-      // 前のカードが選択されていた時
+      // 前のカードが選択されていた場合
       case selectedTypeInterface.FIELD_FRONT_CARD:
         if (this.fromFieldCardValidate(selectedCard, isEnemy) || !isBack) {
           return;
         }
-        selectedCard.status = CardStatus.FIELD_DONE;
-        this.getPlayerController(isEnemy).moveFieldFrontToBack([selectedCard]);
+        this.getPlayerCardById(
+          selectedCard,
+          isEnemy
+        ).location = this.getCardLocationFrontOrBack(isBack);
+        this.getPlayerCardById(selectedCard, isEnemy).status = CardStatus.DONE;
+
         break;
       // 後ろのカードが選択されていた時
       case selectedTypeInterface.FIELD_BACK_CARD:
         if (this.fromFieldCardValidate(selectedCard, isEnemy, true) || isBack) {
           return;
         }
-        selectedCard.status = CardStatus.FIELD_DONE;
-        this.getPlayerController(isEnemy).moveFieldBackToFront([selectedCard]);
+        this.getPlayerCardById(
+          selectedCard,
+          isEnemy
+        ).location = this.getCardLocationFrontOrBack(isBack);
+        this.getPlayerCardById(selectedCard, isEnemy).status = CardStatus.DONE;
         break;
       default:
         break;
@@ -211,13 +261,10 @@ export class GameManager {
       .map((h) => h.id)
       .includes(card.id);
     // 出撃時のvaligate
-    const checkField = isBack
-      ? this.getPlayerController(isEnemy).field.front
-      : this.getPlayerController(isEnemy).field.back;
-    const fieldValidate =
-      checkField.filter(
-        (f) => f.card_data.char_name === card.card_data.char_name
-      ).length > 0;
+    const fieldValidate = !this.getField(isEnemy, isBack).find(
+      (card) => card.card_data.char_name === card.card_data.char_name
+    );
+
     return handValidate || fieldValidate;
   }
 
@@ -244,35 +291,36 @@ export class GameManager {
       return;
     }
     this.operatedController.unselect();
-    this.getPlayerController(isEnemy).removeHand([selectedHand]);
-    this.getPlayerController(isEnemy).addBonds([selectedHand]);
+    this.getPlayerCardById(selectedHand, isEnemy).location = CardLocation.BOND;
   }
 
   attack(card: GameCardStatusInterface, isEnemy: boolean, isBack = false) {
     const selectedAttackCard = this.operatedController.selectedCard!;
     //TODO: validateは必要
     //isEnemyは攻撃された側の値が入るのに注意
-    const attackSupportCard = this.getPlayerController(!isEnemy).turnSupport();
-    const attackedSupportCard = this.getPlayerController(isEnemy).turnSupport();
-    selectedAttackCard.status = CardStatus.FIELD_DONE;
-    //TODO: 攻撃時の挙動、あとで計算とか追加
+    const attackSupportCard = this.getDeck(!isEnemy)[0];
+    attackSupportCard.location = CardLocation.SUPPORT;
+    const attackedSupportCard = this.getDeck(isEnemy)[0];
+    attackedSupportCard.location = CardLocation.SUPPORT;
 
+    //TODO: 攻撃時の挙動
     const attackPower =
       selectedAttackCard.card_data.power +
       attackSupportCard.card_data.support_power;
     const attackedPower =
       card.card_data.power + attackedSupportCard.card_data.support_power;
-    const title = attackPower >= attackedPower ? "Attack Win!" : "Guard Win!";
+
+    const isWin = attackPower >= attackedPower;
+    const title = isWin ? "Attack Win!" : "Guard Win!";
     const message = "attack: " + attackPower + " VS attacked: " + attackedPower;
+
     const defeat = () => {
-      if (isBack) {
-        this.getPlayerController(isEnemy).removeBackField([card]);
-      } else {
-        this.getPlayerController(isEnemy).removeFrontField([card]);
+      if (isWin) {
+        this.getPlayerCardById(card, isEnemy).location =
+          CardLocation.EVACUATION;
       }
-      this.getPlayerController(isEnemy).addEvacuation([card]);
-      this.getPlayerController(!isEnemy).throwSupport();
-      this.getPlayerController(isEnemy).throwSupport();
+      this.getSupport(isEnemy).location = CardLocation.EVACUATION;
+      this.getSupport(!isEnemy).location = CardLocation.EVACUATION;
     };
 
     // 数秒後に確認ダイアログ

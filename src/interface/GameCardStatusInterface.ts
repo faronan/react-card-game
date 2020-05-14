@@ -5,11 +5,23 @@ export interface GameCardStatusInterface {
   card_data: CardInterface;
   is_enemy: boolean;
   status: CardStatus;
+  location: CardLocation;
 }
 
 export enum CardStatus {
-  NONE,
-  FIELD_DONE,
-  BOND_DONE,
-  BOND_REVERSE,
+  WIP,
+  DONE,
+  REVERSE,
+}
+
+export enum CardLocation {
+  DECK,
+  EVACUATION,
+  FIELD_FRONT,
+  FIELD_BACK,
+  FIELD_UNDER_CARD,
+  BOND,
+  HAND,
+  ORB,
+  SUPPORT,
 }

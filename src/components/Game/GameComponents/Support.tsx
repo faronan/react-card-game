@@ -6,7 +6,7 @@ import "../../../css/gameStyle.css";
 
 const Support = (props: { isEnemy: boolean }) => {
   const gameManager = React.useContext(hooksContexts);
-  const supportCard = gameManager.getPlayerController(props.isEnemy).support;
+  const supportCard = gameManager.getSupport(props.isEnemy);
 
   const support =
     supportCard == null ? (

@@ -17,9 +17,7 @@ const Card = (props: {
   const cardOnClick = () => {
     gameManager.select(props.type, props.card, props.isEnemy);
   };
-  const className = [CardStatus.FIELD_DONE, CardStatus.BOND_DONE].includes(
-    props.card.status
-  )
+  const className = [CardStatus.DONE].includes(props.card.status)
     ? "card_done"
     : "card_";
   // memo: src={`${process.env.PUBLIC_URL}/card.png`}

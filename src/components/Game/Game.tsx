@@ -2,17 +2,19 @@ import React from "react";
 import { useLocation } from "react-router-dom";
 import { CardInterface } from "../../interface/CardInterface";
 import { DeckInterface } from "../../interface/DeckInterface";
-import "../../css/style.css";
 import GameManager from "../../lib/GameManager";
-import { usePlayerController } from "../../lib/playerController";
 import { useOperatedController } from "../../lib/operatedController";
 import {
   GameCardStatusInterface,
   CardStatus,
+  CardLocation,
 } from "../../interface/GameCardStatusInterface";
 import Buttons from "./GameComponents/Buttons";
 import MyPlayer from "./GameComponents/MyPlayer";
 import EnemyPlayer from "./GameComponents/EnemyPlayer";
+import { useGameCardController } from "../../lib/GameCardController";
+
+import "../../css/style.css";
 
 export const hooksContexts = React.createContext<GameManager>(
   new GameManager()
@@ -39,7 +41,8 @@ export const Game = () => {
             id: i,
             card_data: card!,
             is_enemy: is_enemy,
-            status: CardStatus.NONE,
+            status: CardStatus.WIP,
+            location: CardLocation.DECK,
           };
           return gameCardStatus;
         });
@@ -48,8 +51,10 @@ export const Game = () => {
   };
 
   const gameManager = new GameManager(
-    usePlayerController(deckToGameCardStatusArray(myDeck)),
-    usePlayerController(deckToGameCardStatusArray(enemyDeck, true)),
+    // deckToGameCardStatusArray(myDeck),
+    // deckToGameCardStatusArray(enemyDeck, true),
+    useGameCardController(deckToGameCardStatusArray(myDeck)),
+    useGameCardController(deckToGameCardStatusArray(enemyDeck, true)),
     useOperatedController()
   );
 

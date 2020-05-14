@@ -1,13 +1,13 @@
 import React from "react";
 import { hooksContexts } from "../Game";
+import { CardLocation } from "../../../interface/GameCardStatusInterface";
 
 const Buttons = () => {
   const gameManager = React.useContext(hooksContexts);
   const draw = (isEnemy = false) => {
-    const playerController = gameManager.getPlayerController(isEnemy);
-    const card = playerController.deck[0];
-    playerController.addHand([card]);
-    playerController.removeDeck([card]);
+    const drawCard = gameManager.getDeck(isEnemy)[0];
+    drawCard.location = CardLocation.HAND;
+    gameManager.setPlaterCards(drawCard, isEnemy);
   };
   const myDraw = () => {
     draw();

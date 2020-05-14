@@ -6,7 +6,7 @@ import "../../../css/gameStyle.css";
 
 const Bonds = (props: { isEnemy: boolean }) => {
   const gameManager = React.useContext(hooksContexts);
-  const bondsCard = gameManager.getPlayerController(props.isEnemy).bonds;
+  const bondsCard = gameManager.getBond(props.isEnemy);
 
   const cards = (
     <div>

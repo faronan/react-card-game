@@ -6,7 +6,7 @@ import "../../../css/gameStyle.css";
 
 const Orb = (props: { isEnemy: boolean }) => {
   const gameManager = React.useContext(hooksContexts);
-  const orb = gameManager.getPlayerController(props.isEnemy).orb;
+  const orb = gameManager.getOrb(props.isEnemy);
 
   const cards = (
     <ul className="orb">

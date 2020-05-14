@@ -6,11 +6,12 @@ import "../../../css/gameStyle.css";
 
 const Hand = (props: { isEnemy: boolean }) => {
   const gameManager = React.useContext(hooksContexts);
+  const hands = gameManager.getHand(props.isEnemy);
   const cards = (
     <div className="hand">
       <h3 className="hand_text">手札</h3>
       <ul className="card_in_hand">
-        {gameManager.getHand(props.isEnemy).map((card) => (
+        {hands.map((card) => (
           <Card
             card={card}
             type={selectedTypeInterface.HAND}

@@ -6,8 +6,7 @@ import "../../../css/gameStyle.css";
 
 const Evacuation = (props: { isEnemy: boolean }) => {
   const gameManager = React.useContext(hooksContexts);
-  const evacuationCard = gameManager.getPlayerController(props.isEnemy)
-    .evacuation;
+  const evacuationCard = gameManager.getEvacuation(props.isEnemy);
 
   const cards = (
     <div className="cards">
