@@ -12,7 +12,7 @@ const Field = (props: { isEnemy: boolean; isBack: boolean }) => {
     : selectedTypeInterface.FIELD_FRONT_CARD;
 
   const cards = (
-    <div className="cards">
+    <div className="field_cards">
       <ul>
         {fieldCards.map((card) => (
           <Card

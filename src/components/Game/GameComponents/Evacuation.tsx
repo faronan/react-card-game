@@ -7,20 +7,18 @@ import "../../../css/gameStyle.css";
 const Evacuation = (props: { isEnemy: boolean }) => {
   const gameManager = React.useContext(hooksContexts);
   const evacuationCard = gameManager.getEvacuation(props.isEnemy);
+  const card = evacuationCard[0];
 
-  const cards = (
+  const cards = card ? (
     <div className="cards">
-      <ul>
-        {evacuationCard.map((card) => (
-          <Card
-            card={card}
-            type={selectedTypeInterface.BONDS_CARD}
-            key={card.id}
-            isEnemy={props.isEnemy}
-          ></Card>
-        ))}
-      </ul>
+      <Card
+        card={card}
+        type={selectedTypeInterface.BONDS_CARD}
+        isEnemy={props.isEnemy}
+      ></Card>
     </div>
+  ) : (
+    <div></div>
   );
 
   return cards;

@@ -1,7 +1,6 @@
 /* eslint-disable no-unused-vars */
 import { confirmAlert } from "react-confirm-alert"; // Import
 import "react-confirm-alert/src/react-confirm-alert.css"; // Import css
-import { playerController } from "./playerController";
 import { operatedController } from "./operatedController";
 import { selectedTypeInterface } from "../interface/SelectedTypeInterface";
 import {
@@ -71,10 +70,10 @@ export class GameManager {
           this.toBonds(isEnemy);
           break;
         case selectedTypeInterface.FIELD_FRONT_CARD:
-          this.attack(card!, isEnemy);
+          this.attack(card!);
           break;
         case selectedTypeInterface.FIELD_BACK_CARD:
-          this.attack(card!, isEnemy);
+          this.attack(card!);
           break;
         default:
           break;
@@ -174,7 +173,9 @@ export class GameManager {
   }
 
   orbCardChoice(card: GameCardStatusInterface, isEnemy = false) {
-    this.getPlayerCardById(card, isEnemy).location = CardLocation.HAND;
+    const orbToHandCard = this.getPlayerCardById(card, isEnemy);
+    orbToHandCard.location = CardLocation.HAND;
+    this.setPlaterCards(orbToHandCard, isEnemy);
   }
 
   toField(isEnemy: boolean, isBack = false) {
@@ -183,12 +184,13 @@ export class GameManager {
       return;
     }
     this.operatedController.unselect();
-
+    if (selectedCard.is_enemy !== isEnemy) {
+      return;
+    }
     // クラスチェンジした場合は早期return
     const classChangeBaseCard = this.getField(isEnemy, isBack).find(
       (card) => card.card_data.char_name === selectedCard.card_data.char_name
     );
-
     if (classChangeBaseCard) {
       const levelUp = () => {
         this.getPlayerCardById(classChangeBaseCard, isEnemy).location =
@@ -198,16 +200,19 @@ export class GameManager {
           isEnemy
         ).location = this.getCardLocationFrontOrBack(isBack);
       };
-      this.createDialog(
-        "Confirm",
-        "Change 「" +
+      // コストが下がる or 同じ時は一応警告を出す
+      if (classChangeBaseCard.card_data.cost >= selectedCard.card_data.cost) {
+        this.createDialog(
+          "警告",
           classChangeBaseCard.card_data.char_name +
-          "」 to 「" +
-          selectedCard.card_data.char_name +
-          "」",
-        levelUp,
-        () => console.log("cancel")
-      );
+            "のコストは上がりませんがよろしいですか？",
+          levelUp,
+          () => console.log("cancel")
+        );
+      } else {
+        levelUp();
+      }
+
       return;
     }
 
@@ -261,9 +266,10 @@ export class GameManager {
       .map((h) => h.id)
       .includes(card.id);
     // 出撃時のvaligate
-    const fieldValidate = !this.getField(isEnemy, isBack).find(
-      (card) => card.card_data.char_name === card.card_data.char_name
-    );
+    const fieldValidate =
+      this.getField(isEnemy, isBack).find(
+        (c) => c.card_data.char_name === card.card_data.char_name
+      ) !== undefined;
 
     return handValidate || fieldValidate;
   }
@@ -294,37 +300,46 @@ export class GameManager {
     this.getPlayerCardById(selectedHand, isEnemy).location = CardLocation.BOND;
   }
 
-  attack(card: GameCardStatusInterface, isEnemy: boolean, isBack = false) {
+  attack(card: GameCardStatusInterface) {
     const selectedAttackCard = this.operatedController.selectedCard!;
     //TODO: validateは必要
-    //isEnemyは攻撃された側の値が入るのに注意
-    const attackSupportCard = this.getDeck(!isEnemy)[0];
+    if (selectedAttackCard.is_enemy === card.is_enemy) {
+      return;
+    }
+    //cardが攻撃された側、selectedAttackCardが攻撃する側
+    const attackSupportCard = this.getDeck(card.is_enemy)[0];
     attackSupportCard.location = CardLocation.SUPPORT;
-    const attackedSupportCard = this.getDeck(isEnemy)[0];
+    const attackedSupportCard = this.getDeck(selectedAttackCard.is_enemy)[0];
     attackedSupportCard.location = CardLocation.SUPPORT;
 
     //TODO: 攻撃時の挙動
-    const attackPower =
-      selectedAttackCard.card_data.power +
-      attackSupportCard.card_data.support_power;
     const attackedPower =
-      card.card_data.power + attackedSupportCard.card_data.support_power;
+      Number(selectedAttackCard.card_data.power) +
+      Number(attackSupportCard.card_data.support_power);
+    const attackPower =
+      Number(card.card_data.power) +
+      Number(attackedSupportCard.card_data.support_power);
 
     const isWin = attackPower >= attackedPower;
-    const title = isWin ? "Attack Win!" : "Guard Win!";
-    const message = "attack: " + attackPower + " VS attacked: " + attackedPower;
+    const title = isWin ? "攻撃側の勝利!" : "防御側の勝利!";
+    const message = "攻撃: " + attackPower + " VS 防御: " + attackedPower;
 
     const defeat = () => {
       if (isWin) {
-        this.getPlayerCardById(card, isEnemy).location =
+        this.getPlayerCardById(card, card.is_enemy).location =
           CardLocation.EVACUATION;
       }
-      this.getSupport(isEnemy).location = CardLocation.EVACUATION;
-      this.getSupport(!isEnemy).location = CardLocation.EVACUATION;
+      this.getSupport(card.is_enemy).location = CardLocation.EVACUATION;
+      this.getSupport(selectedAttackCard.is_enemy).location =
+        CardLocation.EVACUATION;
     };
 
     // 数秒後に確認ダイアログ
-    setTimeout(() => this.createDialog(title, message, defeat, null), 1000);
+
+    setTimeout(() => {
+      defeat();
+      this.createDialog(title, message, () => console.log("yes"), null);
+    }, 1000);
 
     //終了
 

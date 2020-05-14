@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { CardInterface } from "../../interface/CardInterface";
 import { DeckInterface } from "../../interface/DeckInterface";
@@ -57,6 +57,71 @@ export const Game = () => {
     useGameCardController(deckToGameCardStatusArray(enemyDeck, true)),
     useOperatedController()
   );
+
+  const shuffle = ([...arr]) => {
+    let m = arr.length;
+    while (m) {
+      const i = Math.floor(Math.random() * m--);
+      [arr[m], arr[i]] = [arr[i], arr[m]];
+    }
+    return arr;
+  };
+
+  const initialize = () => {
+    const shuffledMyDeck: GameCardStatusInterface[] = shuffle(
+      gameManager.getDeck(false)
+    );
+    const myHeroCard = gameManager
+      .getPlayerCards(false)
+      .find((c) => Number(c.card_data.id) === myDeck.HeroCardId)!;
+    myHeroCard.location = CardLocation.FIELD_FRONT;
+    const myOrbCards = [...Array(5)].map((_, i) => {
+      const myOrbCard = shuffledMyDeck[i];
+      myOrbCard.location = CardLocation.ORB;
+      return myOrbCard;
+    });
+    const myOtherHeroCard = shuffledMyDeck
+      .slice(5, 1000)
+      .filter(
+        (c) => c.id !== myHeroCard.id || c.card_data !== myHeroCard.card_data
+      );
+
+    gameManager.playerCards.setPlayerCards([
+      ...myOtherHeroCard,
+      ...myOrbCards,
+      myHeroCard,
+    ]);
+
+    const shuffledEnemyDeck: GameCardStatusInterface[] = shuffle(
+      gameManager.getDeck(true)
+    );
+    const enemyHeroCard = gameManager
+      .getPlayerCards(true)
+      .find((c) => Number(c.card_data.id) === myDeck.HeroCardId)!;
+    enemyHeroCard.location = CardLocation.FIELD_FRONT;
+    const enemyOrbCards = [...Array(5)].map((_, i) => {
+      const enemyOrbCard = shuffledEnemyDeck[i];
+      enemyOrbCard.location = CardLocation.ORB;
+      return enemyOrbCard;
+    });
+    const enemyOtherHeroCards = shuffledEnemyDeck
+      .slice(5, 1000)
+      .filter(
+        (c) =>
+          c.id !== enemyHeroCard.id || c.card_data !== enemyHeroCard.card_data
+      );
+
+    gameManager.enemyPlayerCards.setPlayerCards([
+      ...enemyOtherHeroCards,
+      ...enemyOrbCards,
+      enemyHeroCard,
+    ]);
+  };
+
+  useEffect(() => {
+    initialize();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <hooksContexts.Provider value={gameManager}>
