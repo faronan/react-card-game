@@ -1,6 +1,5 @@
 import React from "react";
 import { hooksContexts } from "../Game";
-import { CardLocation } from "../../../interface/GameCardStatusInterface";
 
 const Buttons = () => {
   const gameManager = React.useContext(hooksContexts);

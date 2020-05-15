@@ -26,3 +26,17 @@ export const createDialog = (
     buttons: buttons,
   });
 };
+
+export const createOkDialog = (title: string, message: string) => {
+  let buttons = [
+    {
+      label: "OK",
+      onClick: () => {},
+    },
+  ];
+  confirmAlert({
+    title: title,
+    message: message,
+    buttons: buttons,
+  });
+};

@@ -37,6 +37,12 @@ const MyPlayer = () => {
         <div className="my_deck">
           <Deck></Deck>
         </div>
+        <button
+          className="my-turn-end-button"
+          onClick={() => gameManager.goNextTurn(false)}
+        >
+          ターン終了
+        </button>
         <div className="my_support">
           <Support></Support>
         </div>

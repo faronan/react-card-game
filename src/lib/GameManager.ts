@@ -7,7 +7,7 @@ import {
   CardLocation,
 } from "../interface/GameCardStatusInterface";
 import { gameCardController } from "./GameCardController";
-import { createDialog } from "./libComponents";
+import { createDialog, createOkDialog } from "./libComponents";
 
 export class GameManager {
   //自プレイヤーのカード
@@ -64,6 +64,7 @@ export class GameManager {
             this.handCardChoice(card);
             break;
           }
+        // eslint-disable-next-line no-fallthrough
         case selectedTypeInterface.FIELD_FRONT:
           this.toField(isEnemy);
           break;
@@ -145,6 +146,12 @@ export class GameManager {
     );
   }
 
+  getValidBondCount(isEnemy = false) {
+    return this.getBond(isEnemy).filter(
+      (card) => card.status !== CardStatus.DONE
+    ).length;
+  }
+
   getField(isEnemy = false, isBack: boolean) {
     if (isBack) {
       return this.getPlayerCards(isEnemy).filter(
@@ -161,6 +168,19 @@ export class GameManager {
     return this.getPlayerCards(isEnemy).find(
       (c) => c.location === CardLocation.SUPPORT
     )!;
+  }
+
+  goNextTurn(isEnemy: boolean) {
+    this.getBond(isEnemy)
+      .filter((card) => card.status === CardStatus.DONE)
+      .map((card) => (card.status = CardStatus.WIP));
+    this.getField(isEnemy, true)
+      .filter((card) => card.status === CardStatus.DONE)
+      .map((card) => (card.status = CardStatus.WIP));
+    this.getField(isEnemy, false)
+      .filter((card) => card.status === CardStatus.DONE)
+      .map((card) => (card.status = CardStatus.WIP));
+    this.setPlaterCards(this.getPlayerCards(isEnemy)[0], isEnemy);
   }
 
   handCardChoice(card: GameCardStatusInterface) {
@@ -206,6 +226,7 @@ export class GameManager {
         if (this.fromHandValidate(selectedCard, isEnemy, isBack)) {
           return;
         }
+
         // クラスチェンジした場合は早期return
         const classChangeBaseCard = this.getField(isEnemy, isBack).find(
           (card) =>
@@ -213,6 +234,32 @@ export class GameManager {
         );
         if (classChangeBaseCard) {
           const levelUp = () => {
+            if (selectedCard.card_data.over_cost) {
+              // CC用のコストで計算
+              if (
+                selectedCard.card_data.over_cost >
+                this.getValidBondCount(isEnemy)
+              ) {
+                createOkDialog("警告", "絆の枚数が足りません");
+                return;
+              }
+              this.getBond(isEnemy)
+                .slice(0, selectedCard.card_data.over_cost)
+                .map((card) => (card.status = CardStatus.DONE));
+
+              // CC時はドローする
+              this.draw(isEnemy);
+            } else {
+              if (
+                selectedCard.card_data.cost > this.getValidBondCount(isEnemy)
+              ) {
+                createOkDialog("警告", "絆の枚数が足りません");
+                return;
+              }
+              this.getBond(isEnemy)
+                .slice(0, selectedCard.card_data.cost)
+                .map((card) => (card.status = CardStatus.DONE));
+            }
             this.getPlayerCardById(classChangeBaseCard, isEnemy).location =
               CardLocation.FIELD_UNDER_CARD;
             this.getPlayerCardById(
@@ -225,30 +272,42 @@ export class GameManager {
               isEnemy
             );
           };
-          // コストが下がる or 同じ時は一応警告を出す
-          if (
-            classChangeBaseCard.card_data.cost >= selectedCard.card_data.cost
-          ) {
+
+          // CCコストがない => ただのレベルアップの時は
+          if (!selectedCard.card_data.over_cost) {
             createDialog(
               "警告",
               classChangeBaseCard.card_data.char_name +
                 "のコストは上がりませんがよろしいですか？",
               levelUp,
-              () => console.log("cancel")
+              () => {}
             );
           } else {
             levelUp();
           }
         } else {
+          // 通常のコストで計算
+          if (selectedCard.card_data.cost > this.getValidBondCount(isEnemy)) {
+            createOkDialog("警告", "絆の枚数が足りません");
+            return;
+          }
+          this.getBond(isEnemy)
+            .slice(0, selectedCard.card_data.cost)
+            .map((card) => (card.status = CardStatus.DONE));
           this.getPlayerCardById(
             selectedCard,
             isEnemy
           ).location = this.getCardLocationFrontOrBack(isBack);
         }
+
         break;
       // 前のカードが選択されていた場合
       case selectedTypeInterface.FIELD_FRONT_CARD:
-        if (this.fromFieldCardValidate(selectedCard, isEnemy) || !isBack) {
+        if (
+          this.fromFieldCardValidate(selectedCard, isEnemy) ||
+          !isBack ||
+          selectedCard.status === CardStatus.DONE
+        ) {
           return;
         }
         this.getPlayerCardById(
@@ -260,7 +319,11 @@ export class GameManager {
         break;
       // 後ろのカードが選択されていた時
       case selectedTypeInterface.FIELD_BACK_CARD:
-        if (this.fromFieldCardValidate(selectedCard, isEnemy, true) || isBack) {
+        if (
+          this.fromFieldCardValidate(selectedCard, isEnemy, true) ||
+          isBack ||
+          selectedCard.status === CardStatus.DONE
+        ) {
           return;
         }
         this.getPlayerCardById(
@@ -320,7 +383,10 @@ export class GameManager {
   attack(card: GameCardStatusInterface) {
     const selectedAttackCard = this.operatedController.selectedCard!;
     //TODO: validateは必要
-    if (selectedAttackCard.is_enemy === card.is_enemy) {
+    if (
+      selectedAttackCard.is_enemy === card.is_enemy ||
+      selectedAttackCard.status === CardStatus.DONE
+    ) {
       return;
     }
     //cardが攻撃された側、selectedAttackCardが攻撃する側
@@ -328,6 +394,8 @@ export class GameManager {
     attackSupportCard.location = CardLocation.SUPPORT;
     const attackedSupportCard = this.getDeck(selectedAttackCard.is_enemy)[0];
     attackedSupportCard.location = CardLocation.SUPPORT;
+
+    selectedAttackCard.status = CardStatus.DONE;
 
     //TODO: 攻撃時の挙動
     const guardPower =

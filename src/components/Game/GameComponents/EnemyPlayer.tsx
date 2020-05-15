@@ -36,6 +36,12 @@ const EnemyPlayer = () => {
         <div className="enemy_deck">
           <Deck isEnemy={true}></Deck>
         </div>
+        <button
+          className="enemy-turn-end-button"
+          onClick={() => gameManager.goNextTurn(true)}
+        >
+          ターン終了
+        </button>
         <div className="enemy_support">
           <Support isEnemy={true}></Support>
         </div>

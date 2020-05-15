@@ -6,11 +6,16 @@ import "../../../css/gameStyle.css";
 
 const Bonds = (props: { isEnemy: boolean }) => {
   const gameManager = React.useContext(hooksContexts);
-  const bondsCard = gameManager.getBond(props.isEnemy);
+  const isEnemy = props.isEnemy;
+  const bondsCard = gameManager.getBond(isEnemy);
+  const validBondCount = gameManager.getValidBondCount(isEnemy);
 
   const cards = (
     <div>
-      <ul className="bonds">
+      <div className="bond-count-icon">
+        <p>{`${validBondCount}/${bondsCard.length}`}</p>
+      </div>
+      <div className="bonds">
         {bondsCard.map((card) => (
           <Card
             card={card}
@@ -18,7 +23,7 @@ const Bonds = (props: { isEnemy: boolean }) => {
             key={`${card.card_data.id}-${card.id}`}
           ></Card>
         ))}
-      </ul>
+      </div>
     </div>
   );
   return cards;

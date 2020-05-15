@@ -76,7 +76,7 @@ export const Game = () => {
       .find((c) => Number(c.card_data.id) === myDeck.HeroCardId)!;
     myHeroCard.location = CardLocation.FIELD_FRONT;
 
-    const newMyDeck = shuffledMyDeck.filter((card) => card != myHeroCard);
+    const newMyDeck = shuffledMyDeck.filter((card) => card !== myHeroCard);
 
     const myOrbCards = [...Array(5)].map((_, i) => {
       const myOrbCard = newMyDeck[i];
@@ -110,7 +110,7 @@ export const Game = () => {
     enemyHeroCard.location = CardLocation.FIELD_FRONT;
 
     const newEnemyDeck = shuffledEnemyDeck.filter(
-      (card) => card != enemyHeroCard
+      (card) => card !== enemyHeroCard
     );
 
     const enemyOrbCards = [...Array(5)].map((_, i) => {

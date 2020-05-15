@@ -1,4 +1,5 @@
 .bonds {
+  padding-top: 0px;
   padding-left: 0px;
 }
 
@@ -193,4 +194,58 @@
   width: 100%;
   height: 100%;
   box-shadow: inset 0 0 0px 8px rgba(255, 255, 255, 0.6);
+}
+
+.bond-count-icon {
+  position: absolute;
+  top: 0%;
+  left: 0%;
+  display: inline-block;
+  text-decoration: none;
+  color: #fff;
+  width: 15%;
+  height: 100%;
+  line-height: 0;
+  border-radius: 50%;
+  text-align: center;
+  overflow: hidden;
+  background-image: linear-gradient(45deg, #709dff 0%, #91fdb7 100%);
+  transition: 0.4s;
+  font-size: 50%;
+}
+
+.my-turn-end-button {
+  position: absolute;
+  top: 83%;
+  left: 90%;
+  display: inline-block;
+  text-decoration: none;
+  color: #fff;
+  width: 10%;
+  height: 15%;
+  line-height: 1;
+  border-radius: 50%;
+  text-align: center;
+  overflow: hidden;
+  background-image: linear-gradient(45deg, #709dff 0%, #91fdb7 100%);
+  transition: 0.4s;
+  font-size: 10%;
+}
+
+.enemy-turn-end-button {
+  position: absolute;
+  top: 0%;
+  left: 0%;
+  display: inline-block;
+  text-decoration: none;
+  color: #fff;
+  width: 10%;
+  height: 15%;
+  line-height: 1;
+  border-radius: 50%;
+  text-align: center;
+  overflow: hidden;
+  background-image: linear-gradient(45deg, #709dff 0%, #91fdb7 100%);
+  transition: 0.4s;
+  font-size: 10%;
 }
