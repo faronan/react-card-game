@@ -19,7 +19,7 @@ const Field = (props: { isEnemy: boolean; isBack: boolean }) => {
             card={card}
             type={selectType}
             isEnemy={props.isEnemy}
-            key={card.id}
+            key={`${card.card_data.id}-${card.id}`}
           ></Card>
         ))}
       </ul>

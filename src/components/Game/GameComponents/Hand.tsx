@@ -15,7 +15,7 @@ const Hand = (props: { isEnemy: boolean }) => {
             <Card
               card={card}
               type={selectedTypeInterface.HAND}
-              key={card.id}
+              key={`${card.card_data.id}-${card.id}`}
             ></Card>
           ))}
         </ul>

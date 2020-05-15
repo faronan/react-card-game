@@ -14,7 +14,7 @@ const Orb = (props: { isEnemy: boolean }) => {
         <Card
           card={card}
           type={selectedTypeInterface.ORB_CARD}
-          key={card.id}
+          key={`${card.card_data.id}-${card.id}`}
           isEnemy={props.isEnemy}
         ></Card>
       ))}

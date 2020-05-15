@@ -15,7 +15,7 @@ const Bonds = (props: { isEnemy: boolean }) => {
           <Card
             card={card}
             type={selectedTypeInterface.BONDS_CARD}
-            key={card.id}
+            key={`${card.card_data.id}-${card.id}`}
           ></Card>
         ))}
       </ul>

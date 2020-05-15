@@ -39,12 +39,24 @@ const Card = (props: {
     return "card_default";
   })();
 
+  const isSelectedClassName = (className: string) => {
+    const isSelected = gameManager.operatedController.selectedCard === card;
+    return isSelected ? className + " card_selected" : className;
+  };
+
   const src = [CardLocation.DECK, CardLocation.ORB].includes(card.location)
     ? `${process.env.PUBLIC_URL}/card_back_side.jpg`
     : card.card_data.image;
 
   // memo: src={`${process.env.PUBLIC_URL}/card.png`}
-  return <img src={src} className={className} alt="" onClick={cardOnClick} />;
+  return (
+    <img
+      src={src}
+      className={isSelectedClassName(className)}
+      alt=""
+      onClick={cardOnClick}
+    />
+  );
 };
 
 Card.defaultProps = { isEnemy: false };

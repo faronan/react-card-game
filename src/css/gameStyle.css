@@ -12,6 +12,10 @@
   height: auto;
 }
 
+.card_selected {
+  border: double 5px #4ec4d3;
+}
+
 .card_bond {
   width: 12%;
   height: auto;
@@ -23,12 +27,12 @@
 }
 
 .card_field {
-  width: 15%;
+  width: 17%;
   height: auto;
 }
 
 .card_done {
-  width: 15%;
+  width: 17%;
   height: auto;
   transform: rotate(-90deg);
 }
@@ -39,6 +43,7 @@
 }
 
 .field_cards {
+  padding-top: 5%;
 }
 
 .orb {
@@ -174,4 +179,18 @@
   left: 11%;
   width: 10%;
   height: 58%;
+}
+
+.waku02 {
+  position: relative;
+}
+.waku02:before {
+  content: "";
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  box-shadow: inset 0 0 0px 8px rgba(255, 255, 255, 0.6);
 }

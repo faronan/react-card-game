@@ -1,6 +1,4 @@
 /* eslint-disable no-unused-vars */
-import { confirmAlert } from "react-confirm-alert"; // Import
-import "react-confirm-alert/src/react-confirm-alert.css"; // Import css
 import { operatedController } from "./operatedController";
 import { selectedTypeInterface } from "../interface/SelectedTypeInterface";
 import {
@@ -9,6 +7,7 @@ import {
   CardLocation,
 } from "../interface/GameCardStatusInterface";
 import { gameCardController } from "./GameCardController";
+import { createDialog } from "./libComponents";
 
 export class GameManager {
   //自プレイヤーのカード
@@ -60,6 +59,11 @@ export class GameManager {
     } else {
       // 選択状態
       switch (type) {
+        case selectedTypeInterface.HAND:
+          if (card) {
+            this.handCardChoice(card);
+            break;
+          }
         case selectedTypeInterface.FIELD_FRONT:
           this.toField(isEnemy);
           break;
@@ -78,6 +82,8 @@ export class GameManager {
         default:
           break;
       }
+    }
+    if (card) {
     }
   }
 
@@ -178,6 +184,12 @@ export class GameManager {
     this.setPlaterCards(orbToHandCard, isEnemy);
   }
 
+  draw(isEnemy: boolean) {
+    const drawCard = this.getDeck(isEnemy)[0];
+    drawCard.location = CardLocation.HAND;
+    this.setPlaterCards(drawCard, isEnemy);
+  }
+
   toField(isEnemy: boolean, isBack = false) {
     const selectedCard = this.operatedController.selectedCard;
     if (!selectedCard) {
@@ -187,35 +199,6 @@ export class GameManager {
     if (selectedCard.is_enemy !== isEnemy) {
       return;
     }
-    // クラスチェンジした場合は早期return
-    const classChangeBaseCard = this.getField(isEnemy, isBack).find(
-      (card) => card.card_data.char_name === selectedCard.card_data.char_name
-    );
-    if (classChangeBaseCard) {
-      const levelUp = () => {
-        this.getPlayerCardById(classChangeBaseCard, isEnemy).location =
-          CardLocation.FIELD_UNDER_CARD;
-        this.getPlayerCardById(
-          selectedCard,
-          isEnemy
-        ).location = this.getCardLocationFrontOrBack(isBack);
-      };
-      // コストが下がる or 同じ時は一応警告を出す
-      if (classChangeBaseCard.card_data.cost >= selectedCard.card_data.cost) {
-        this.createDialog(
-          "警告",
-          classChangeBaseCard.card_data.char_name +
-            "のコストは上がりませんがよろしいですか？",
-          levelUp,
-          () => console.log("cancel")
-        );
-      } else {
-        levelUp();
-      }
-
-      return;
-    }
-
     const fromType = this.operatedController.fromType;
     switch (fromType) {
       //手札のカードが選択されていた場合
@@ -223,10 +206,45 @@ export class GameManager {
         if (this.fromHandValidate(selectedCard, isEnemy, isBack)) {
           return;
         }
-        this.getPlayerCardById(
-          selectedCard,
-          isEnemy
-        ).location = this.getCardLocationFrontOrBack(isBack);
+        // クラスチェンジした場合は早期return
+        const classChangeBaseCard = this.getField(isEnemy, isBack).find(
+          (card) =>
+            card.card_data.char_name === selectedCard.card_data.char_name
+        );
+        if (classChangeBaseCard) {
+          const levelUp = () => {
+            this.getPlayerCardById(classChangeBaseCard, isEnemy).location =
+              CardLocation.FIELD_UNDER_CARD;
+            this.getPlayerCardById(
+              selectedCard,
+              isEnemy
+            ).location = this.getCardLocationFrontOrBack(isBack);
+            // おまじない
+            this.setPlaterCards(
+              this.getPlayerCardById(selectedCard, isEnemy),
+              isEnemy
+            );
+          };
+          // コストが下がる or 同じ時は一応警告を出す
+          if (
+            classChangeBaseCard.card_data.cost >= selectedCard.card_data.cost
+          ) {
+            createDialog(
+              "警告",
+              classChangeBaseCard.card_data.char_name +
+                "のコストは上がりませんがよろしいですか？",
+              levelUp,
+              () => console.log("cancel")
+            );
+          } else {
+            levelUp();
+          }
+        } else {
+          this.getPlayerCardById(
+            selectedCard,
+            isEnemy
+          ).location = this.getCardLocationFrontOrBack(isBack);
+        }
         break;
       // 前のカードが選択されていた場合
       case selectedTypeInterface.FIELD_FRONT_CARD:
@@ -267,10 +285,9 @@ export class GameManager {
       .includes(card.id);
     // 出撃時のvaligate
     const fieldValidate =
-      this.getField(isEnemy, isBack).find(
+      this.getField(isEnemy, !isBack).find(
         (c) => c.card_data.char_name === card.card_data.char_name
       ) !== undefined;
-
     return handValidate || fieldValidate;
   }
 
@@ -313,16 +330,16 @@ export class GameManager {
     attackedSupportCard.location = CardLocation.SUPPORT;
 
     //TODO: 攻撃時の挙動
-    const attackedPower =
-      Number(selectedAttackCard.card_data.power) +
+    const guardPower =
+      Number(card.card_data.power) +
       Number(attackSupportCard.card_data.support_power);
     const attackPower =
-      Number(card.card_data.power) +
+      Number(selectedAttackCard.card_data.power) +
       Number(attackedSupportCard.card_data.support_power);
 
-    const isWin = attackPower >= attackedPower;
+    const isWin = attackPower >= guardPower;
     const title = isWin ? "攻撃側の勝利!" : "防御側の勝利!";
-    const message = "攻撃: " + attackPower + " VS 防御: " + attackedPower;
+    const message = "攻撃: " + attackPower + " VS 防御: " + guardPower;
 
     const defeat = () => {
       if (isWin) {
@@ -332,45 +349,23 @@ export class GameManager {
       this.getSupport(card.is_enemy).location = CardLocation.EVACUATION;
       this.getSupport(selectedAttackCard.is_enemy).location =
         CardLocation.EVACUATION;
+      //　おまじない
+      this.setPlaterCards(
+        this.getEvacuation(selectedAttackCard.is_enemy)[0],
+        selectedAttackCard.is_enemy
+      );
     };
 
+    createDialog(title, message, defeat, null);
     // 数秒後に確認ダイアログ
-
-    setTimeout(() => {
-      defeat();
-      this.createDialog(title, message, () => console.log("yes"), null);
-    }, 1000);
-
+    // setTimeout(() => {
+    //   defeat();
+    //   this.createDialog(title, message, () => console.log("yes"), null);
+    // }, 1000);
     //終了
 
     this.operatedController.unselect();
   }
-
-  createDialog = (
-    title: string,
-    message: string,
-    onClickYes: () => void,
-    onClickNo: (() => void) | null
-  ) => {
-    let buttons = [
-      {
-        label: "Yes",
-        onClick: onClickYes,
-      },
-    ];
-    if (onClickNo) {
-      const noButton = {
-        label: "No",
-        onClick: onClickNo,
-      };
-      buttons = buttons.concat([noButton]);
-    }
-    confirmAlert({
-      title: title,
-      message: message,
-      buttons: buttons,
-    });
-  };
 }
 
 export default GameManager;

@@ -75,13 +75,21 @@ export const Game = () => {
       .getPlayerCards(false)
       .find((c) => Number(c.card_data.id) === myDeck.HeroCardId)!;
     myHeroCard.location = CardLocation.FIELD_FRONT;
+
+    const newMyDeck = shuffledMyDeck.filter((card) => card != myHeroCard);
+
     const myOrbCards = [...Array(5)].map((_, i) => {
-      const myOrbCard = shuffledMyDeck[i];
+      const myOrbCard = newMyDeck[i];
       myOrbCard.location = CardLocation.ORB;
       return myOrbCard;
     });
-    const myOtherHeroCard = shuffledMyDeck
-      .slice(5, 1000)
+    const myHandCards = [...Array(5)].map((_, i) => {
+      const myHandCard = newMyDeck[i + 5];
+      myHandCard.location = CardLocation.HAND;
+      return myHandCard;
+    });
+    const myOtherHeroCard = newMyDeck
+      .slice(10, 1000)
       .filter(
         (c) => c.id !== myHeroCard.id || c.card_data !== myHeroCard.card_data
       );
@@ -89,6 +97,7 @@ export const Game = () => {
     gameManager.playerCards.setPlayerCards([
       ...myOtherHeroCard,
       ...myOrbCards,
+      ...myHandCards,
       myHeroCard,
     ]);
 
@@ -99,13 +108,24 @@ export const Game = () => {
       .getPlayerCards(true)
       .find((c) => Number(c.card_data.id) === myDeck.HeroCardId)!;
     enemyHeroCard.location = CardLocation.FIELD_FRONT;
+
+    const newEnemyDeck = shuffledEnemyDeck.filter(
+      (card) => card != enemyHeroCard
+    );
+
     const enemyOrbCards = [...Array(5)].map((_, i) => {
-      const enemyOrbCard = shuffledEnemyDeck[i];
+      const enemyOrbCard = newEnemyDeck[i];
       enemyOrbCard.location = CardLocation.ORB;
       return enemyOrbCard;
     });
-    const enemyOtherHeroCards = shuffledEnemyDeck
-      .slice(5, 1000)
+    const enemyHandCards = [...Array(5)].map((_, i) => {
+      const enemyHandCard = newEnemyDeck[i + 5];
+      enemyHandCard.location = CardLocation.HAND;
+      return enemyHandCard;
+    });
+
+    const enemyOtherHeroCards = newEnemyDeck
+      .slice(10, 1000)
       .filter(
         (c) =>
           c.id !== enemyHeroCard.id || c.card_data !== enemyHeroCard.card_data
@@ -114,13 +134,14 @@ export const Game = () => {
     gameManager.enemyPlayerCards.setPlayerCards([
       ...enemyOtherHeroCards,
       ...enemyOrbCards,
+      ...enemyHandCards,
       enemyHeroCard,
     ]);
   };
 
   useEffect(() => {
     initialize();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
