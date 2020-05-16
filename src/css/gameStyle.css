@@ -14,7 +14,7 @@
 }
 
 .card_selected {
-  border: double 5px #4ec4d3;
+  border: dashed 2px #5b8bd0;
 }
 
 .card_bond {
