@@ -234,7 +234,10 @@ export class GameManager {
         );
         if (classChangeBaseCard) {
           const levelUp = () => {
-            if (selectedCard.card_data.over_cost) {
+            if (
+              selectedCard.card_data.over_cost &&
+              selectedCard.card_data.over_cost > 0
+            ) {
               // CC用のコストで計算
               if (
                 selectedCard.card_data.over_cost >
@@ -266,15 +269,21 @@ export class GameManager {
               selectedCard,
               isEnemy
             ).location = this.getCardLocationFrontOrBack(isBack);
+            this.getBond(isEnemy)
+              .slice(0, selectedCard.card_data.cost)
+              .map((card) => (card.status = CardStatus.DONE));
+
             // おまじない
             this.setPlaterCards(
               this.getPlayerCardById(selectedCard, isEnemy),
               isEnemy
             );
           };
-
           // CCコストがない => ただのレベルアップの時は
-          if (!selectedCard.card_data.over_cost) {
+          if (
+            !selectedCard.card_data.over_cost ||
+            selectedCard.card_data.over_cost < 1
+          ) {
             createDialog(
               "警告",
               classChangeBaseCard.card_data.char_name +
@@ -416,7 +425,7 @@ export class GameManager {
     const defeat = () => {
       if (isWin) {
         if (card.status === CardStatus.HERO) {
-          const orbCard = this.getOrb(card.is_enemy)[100];
+          const orbCard = this.getOrb(card.is_enemy)[1];
           if (orbCard) {
             orbCard.location = CardLocation.HAND;
           } else {
