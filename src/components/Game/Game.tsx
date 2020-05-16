@@ -55,9 +55,9 @@ export const Game = () => {
     // deckToGameCardStatusArray(myDeck),
     // deckToGameCardStatusArray(enemyDeck, true),
     useGameCardController(deckToGameCardStatusArray(myDeck)),
-    usePalyerController(),
+    usePalyerController(myDeck.HeroCardId),
     useGameCardController(deckToGameCardStatusArray(enemyDeck, true)),
-    usePalyerController(),
+    usePalyerController(enemyDeck.HeroCardId),
     useOperatedController()
   );
 
@@ -78,7 +78,6 @@ export const Game = () => {
       .getPlayerCards(false)
       .find((c) => Number(c.card_data.id) === myDeck.HeroCardId)!;
     myHeroCard.location = CardLocation.FIELD_FRONT;
-    myHeroCard.status = CardStatus.HERO;
 
     const newMyDeck = shuffledMyDeck.filter((card) => card !== myHeroCard);
 
@@ -112,7 +111,6 @@ export const Game = () => {
       .getPlayerCards(true)
       .find((c) => Number(c.card_data.id) === myDeck.HeroCardId)!;
     enemyHeroCard.location = CardLocation.FIELD_FRONT;
-    enemyHeroCard.status = CardStatus.HERO;
 
     const newEnemyDeck = shuffledEnemyDeck.filter(
       (card) => card !== enemyHeroCard

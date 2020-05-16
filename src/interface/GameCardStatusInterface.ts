@@ -12,7 +12,6 @@ export enum CardStatus {
   UNACTION,
   DONE,
   REVERSE,
-  HERO,
 }
 
 export enum CardLocation {

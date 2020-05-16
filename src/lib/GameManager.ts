@@ -450,7 +450,9 @@ export class GameManager {
 
     const defeat = () => {
       if (isWin) {
-        if (card.status === CardStatus.HERO) {
+        if (
+          Number(card.card_data.id) === this.getPlayer(card.is_enemy).heroCardId
+        ) {
           const orbCard = this.getOrb(card.is_enemy)[1];
           if (orbCard) {
             orbCard.location = CardLocation.HAND;
