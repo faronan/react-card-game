@@ -15,6 +15,7 @@ import EnemyPlayer from "./GameComponents/EnemyPlayer";
 import { useGameCardController } from "../../lib/GameCardController";
 
 import "../../css/style.css";
+import { usePalyerController } from "../../lib/PlayerController";
 
 export const hooksContexts = React.createContext<GameManager>(
   new GameManager()
@@ -54,7 +55,9 @@ export const Game = () => {
     // deckToGameCardStatusArray(myDeck),
     // deckToGameCardStatusArray(enemyDeck, true),
     useGameCardController(deckToGameCardStatusArray(myDeck)),
+    usePalyerController(),
     useGameCardController(deckToGameCardStatusArray(enemyDeck, true)),
+    usePalyerController(),
     useOperatedController()
   );
 

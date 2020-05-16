@@ -8,22 +8,31 @@ import {
 } from "../interface/GameCardStatusInterface";
 import { gameCardController } from "./GameCardController";
 import { createDialog, createOkDialog } from "./libComponents";
+import { playerController } from "./PlayerController";
 
 export class GameManager {
   //自プレイヤーのカード
   playerCards: gameCardController;
+  //自プレイヤーの状態
+  player: playerController;
   //敵プレイヤーのカード
   enemyPlayerCards: gameCardController;
+  //敵プレイヤーの状態
+  enemyPlayer: playerController;
   //操作を記録
   operatedController: operatedController;
 
   constructor(
     playerCards?: gameCardController,
+    player?: playerController,
     enemyPlayerCards?: gameCardController,
+    enemyPlayer?: playerController,
     operatedController?: operatedController
   ) {
     this.playerCards = playerCards!;
+    this.player = player!;
     this.enemyPlayerCards = enemyPlayerCards!;
+    this.enemyPlayer = enemyPlayer!;
     this.operatedController = operatedController!;
   }
 
@@ -88,12 +97,21 @@ export class GameManager {
     }
   }
 
-  // 最初にこの関数を通すことで他の処理を共通化する
+  // カード系は最初にこの関数を通すことで他の処理を共通化する
   getPlayerCards(isEnemy: boolean) {
     if (isEnemy) {
       return this.enemyPlayerCards.playerCards;
     } else {
       return this.playerCards.playerCards;
+    }
+  }
+
+  // プレイヤー系は最初にこの関数を通すことで他の処理を共通化する
+  getPlayer(isEnemy: boolean) {
+    if (isEnemy) {
+      return this.player;
+    } else {
+      return this.enemyPlayer;
     }
   }
 
@@ -171,6 +189,7 @@ export class GameManager {
   }
 
   goNextTurn(isEnemy: boolean) {
+    //カード系のリセット
     this.getBond(isEnemy)
       .filter((card) => card.status === CardStatus.DONE)
       .map((card) => (card.status = CardStatus.UNACTION));
@@ -181,6 +200,9 @@ export class GameManager {
       .filter((card) => card.status === CardStatus.DONE)
       .map((card) => (card.status = CardStatus.UNACTION));
     this.setPlaterCards(this.getPlayerCards(isEnemy)[0], isEnemy);
+
+    //プレイヤー系のリセット
+    this.getPlayer(isEnemy).setIsBondDone(false);
   }
 
   handCardChoice(card: GameCardStatusInterface) {
@@ -211,11 +233,11 @@ export class GameManager {
   }
 
   toField(isEnemy: boolean, isBack = false) {
+    this.operatedController.unselect();
     const selectedCard = this.operatedController.selectedCard;
     if (!selectedCard) {
       return;
     }
-    this.operatedController.unselect();
     if (selectedCard.is_enemy !== isEnemy) {
       return;
     }
@@ -375,6 +397,7 @@ export class GameManager {
   }
 
   toBonds(isEnemy: boolean) {
+    this.operatedController.unselect();
     const selectedHand = this.operatedController.selectedCard;
     // カードを選択しているか、プレイヤーが合っているか、そのうち共通化する
     if (
@@ -385,7 +408,10 @@ export class GameManager {
     ) {
       return;
     }
-    this.operatedController.unselect();
+    if (this.getPlayer(isEnemy).isBondDone) {
+      return;
+    }
+    this.getPlayer(isEnemy).setIsBondDone(true);
     this.getPlayerCardById(selectedHand, isEnemy).location = CardLocation.BOND;
   }
 
