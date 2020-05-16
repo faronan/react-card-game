@@ -9,9 +9,10 @@ export interface GameCardStatusInterface {
 }
 
 export enum CardStatus {
-  WIP,
+  UNACTION,
   DONE,
   REVERSE,
+  HERO,
 }
 
 export enum CardLocation {

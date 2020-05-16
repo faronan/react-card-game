@@ -173,13 +173,13 @@ export class GameManager {
   goNextTurn(isEnemy: boolean) {
     this.getBond(isEnemy)
       .filter((card) => card.status === CardStatus.DONE)
-      .map((card) => (card.status = CardStatus.WIP));
+      .map((card) => (card.status = CardStatus.UNACTION));
     this.getField(isEnemy, true)
       .filter((card) => card.status === CardStatus.DONE)
-      .map((card) => (card.status = CardStatus.WIP));
+      .map((card) => (card.status = CardStatus.UNACTION));
     this.getField(isEnemy, false)
       .filter((card) => card.status === CardStatus.DONE)
-      .map((card) => (card.status = CardStatus.WIP));
+      .map((card) => (card.status = CardStatus.UNACTION));
     this.setPlaterCards(this.getPlayerCards(isEnemy)[0], isEnemy);
   }
 
@@ -411,8 +411,17 @@ export class GameManager {
 
     const defeat = () => {
       if (isWin) {
-        this.getPlayerCardById(card, card.is_enemy).location =
-          CardLocation.EVACUATION;
+        if (card.status === CardStatus.HERO) {
+          const orbCard = this.getOrb(card.is_enemy)[100];
+          if (orbCard) {
+            orbCard.location = CardLocation.HAND;
+          } else {
+            //ゲーム終了時処理
+          }
+        } else {
+          this.getPlayerCardById(card, card.is_enemy).location =
+            CardLocation.EVACUATION;
+        }
       }
       this.getSupport(card.is_enemy).location = CardLocation.EVACUATION;
       this.getSupport(selectedAttackCard.is_enemy).location =
