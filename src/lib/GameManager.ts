@@ -228,6 +228,11 @@ export class GameManager {
 
   draw(isEnemy: boolean) {
     const drawCard = this.getDeck(isEnemy)[0];
+    if (!this.getDeck(isEnemy)[1]) {
+      this.getEvacuation(isEnemy).map(
+        (card) => (card.location = CardLocation.DECK)
+      );
+    }
     drawCard.location = CardLocation.HAND;
     this.setPlaterCards(drawCard, isEnemy);
   }
