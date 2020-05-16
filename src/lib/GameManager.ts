@@ -407,7 +407,11 @@ export class GameManager {
 
     const isWin = attackPower >= guardPower;
     const title = isWin ? "攻撃側の勝利!" : "防御側の勝利!";
-    const message = "攻撃: " + attackPower + " VS 防御: " + guardPower;
+    const message = `攻撃　　　　　　　　防衛　　　　　　　　　
+    ------------------------------------------------------------
+      戦闘力: ${selectedAttackCard.card_data.power}　　　　　 戦闘力: ${card.card_data.power}　　　　　　
+      支援力: ${attackedSupportCard.card_data.support_power}　　　　　 支援力: ${attackSupportCard.card_data.support_power}　　　　　　
+      合計　: ${attackPower}　　　　　 合計　: ${guardPower}　　　　　　`;
 
     const defeat = () => {
       if (isWin) {
