@@ -52,6 +52,9 @@ export class GameManager {
         case CardLocation.ORB:
           this.orbCardChoice(card, isEnemy);
           break;
+        case CardLocation.EVACUATION:
+          this.evacuationCardChoice(card, isEnemy);
+          break;
         default:
           break;
       }
@@ -218,6 +221,19 @@ export class GameManager {
     const orbToHandCard = this.getPlayerCardById(card, isEnemy);
     orbToHandCard.location = CardLocation.HAND;
     this.setPlaterCards(orbToHandCard, isEnemy);
+  }
+
+  evacuationCardChoice(card: GameCardStatusInterface, isEnemy = false) {
+    createDialog(
+      "",
+      `${card.card_data.cost}コスト「${card.card_data.char_name}」を回収しますか？`,
+      () => {
+        const evacuationToHandCard = this.getPlayerCardById(card, isEnemy);
+        evacuationToHandCard.location = CardLocation.HAND;
+        this.setPlaterCards(evacuationToHandCard, isEnemy);
+      },
+      () => {}
+    );
   }
 
   draw(isEnemy: boolean) {
