@@ -1,6 +1,6 @@
 import React from "react";
 import { hooksContexts } from "../Game";
-import { selectedTypeInterface } from "../../../interface/SelectedTypeInterface";
+import { selectedType } from "../../../interface/SelectedTypeInterface";
 import Hand from "./Hand";
 import Deck from "./Deck";
 import Field from "./Field";
@@ -12,12 +12,11 @@ import "../../../css/gameStyle.css";
 
 const MyPlayer = () => {
   const gameManager = React.useContext(hooksContexts);
-  const onBondClick = () =>
-    gameManager.locationSelect(selectedTypeInterface.BONDS);
+  const onBondClick = () => gameManager.locationSelect(selectedType.BONDS);
   const onFieldFrontClick = () =>
-    gameManager.locationSelect(selectedTypeInterface.FIELD_FRONT);
+    gameManager.locationSelect(selectedType.FIELD_FRONT);
   const onFieldBackClick = () =>
-    gameManager.locationSelect(selectedTypeInterface.FIELD_BACK);
+    gameManager.locationSelect(selectedType.FIELD_BACK);
   return (
     <div>
       <div className="my_player">

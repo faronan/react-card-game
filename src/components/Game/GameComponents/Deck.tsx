@@ -1,7 +1,7 @@
 import React from "react";
 import Card from "./Card";
 import { hooksContexts } from "../Game";
-import { selectedTypeInterface } from "../../../interface/SelectedTypeInterface";
+import { selectedType } from "../../../interface/SelectedTypeInterface";
 import "../../../css/gameStyle.css";
 
 const Deck = (props: { isEnemy: boolean }) => {

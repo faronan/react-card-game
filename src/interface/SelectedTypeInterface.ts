@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-export enum selectedTypeInterface {
+export enum selectedType {
   NONE,
   FIELD_FRONT,
   FIELD_BACK,

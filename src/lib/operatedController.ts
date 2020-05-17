@@ -1,18 +1,18 @@
 import { useState } from "react";
 import { GameCardStatusInterface } from "../interface/GameCardStatusInterface";
-import { selectedTypeInterface } from "../interface/SelectedTypeInterface";
+import { selectedType } from "../interface/SelectedTypeInterface";
 
 export interface operatedController {
   isSelected: boolean;
-  fromType: selectedTypeInterface;
+  fromType: selectedType;
   selectedCard: GameCardStatusInterface | null;
-  select: (type: selectedTypeInterface, card: GameCardStatusInterface) => void;
+  select: (type: selectedType, card: GameCardStatusInterface) => void;
   unselect: () => void;
 }
 
 export const useOperatedController = () => {
   const [isSelected, setIsSelected] = useState(false);
-  const [fromType, setFromType] = useState(selectedTypeInterface.NONE);
+  const [fromType, setFromType] = useState(selectedType.NONE);
   const [
     selectedCard,
     setSelectedCard,
@@ -22,14 +22,14 @@ export const useOperatedController = () => {
     isSelected,
     fromType,
     selectedCard,
-    select: (type: selectedTypeInterface, card: GameCardStatusInterface) => {
+    select: (type: selectedType, card: GameCardStatusInterface) => {
       setIsSelected(true);
       setFromType(type);
       setSelectedCard(card);
     },
     unselect: () => {
       setIsSelected(false);
-      setFromType(selectedTypeInterface.NONE);
+      setFromType(selectedType.NONE);
       setSelectedCard(null);
     },
   };
