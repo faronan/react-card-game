@@ -1,9 +1,7 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { Component } from "react";
 import Slider from "react-slick";
 import Card from "./Card";
 import { hooksContexts } from "../Game";
-import { selectedTypeInterface } from "../../../interface/SelectedTypeInterface";
 import "../../../css/gameStyle.css";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -38,7 +36,6 @@ const Evacuation = (props: { isEnemy: boolean }) => {
       {evacuationCard.map((card) => (
         <Card
           card={card}
-          type={selectedTypeInterface.BONDS_CARD}
           isEnemy={props.isEnemy}
           key={`${card.card_data.id}-${card.id}`}
         ></Card>

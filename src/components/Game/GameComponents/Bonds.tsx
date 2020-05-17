@@ -1,7 +1,6 @@
 import React from "react";
 import Card from "./Card";
 import { hooksContexts } from "../Game";
-import { selectedTypeInterface } from "../../../interface/SelectedTypeInterface";
 import "../../../css/gameStyle.css";
 
 const Bonds = (props: { isEnemy: boolean }) => {
@@ -17,11 +16,7 @@ const Bonds = (props: { isEnemy: boolean }) => {
       </div>
       <div className="bonds">
         {bondsCard.map((card) => (
-          <Card
-            card={card}
-            type={selectedTypeInterface.BONDS_CARD}
-            key={`${card.card_data.id}-${card.id}`}
-          ></Card>
+          <Card card={card} key={`${card.card_data.id}-${card.id}`}></Card>
         ))}
       </div>
     </div>

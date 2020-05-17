@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-/* eslint-disable @typescript-eslint/no-unused-vars */
+
 import React, { useState } from "react";
 import firebase from "../../Firebase";
 import { Collapse, CardBody, Card } from "reactstrap";

@@ -5,19 +5,14 @@ import {
   CardStatus,
   CardLocation,
 } from "../../../interface/GameCardStatusInterface";
-import { selectedTypeInterface } from "../../../interface/SelectedTypeInterface";
 import { hooksContexts } from "../Game";
 import "../../../css/gameStyle.css";
 
-const Card = (props: {
-  card: GameCardStatusInterface;
-  type: selectedTypeInterface;
-  isEnemy: boolean;
-}) => {
+const Card = (props: { card: GameCardStatusInterface; isEnemy: boolean }) => {
   const gameManager = React.useContext(hooksContexts);
   const card = props.card;
   const cardOnClick = () => {
-    gameManager.select(props.type, card, props.isEnemy);
+    gameManager.cardSelect(card, props.isEnemy);
   };
   const className = (() => {
     if (card.location === CardLocation.HAND) {

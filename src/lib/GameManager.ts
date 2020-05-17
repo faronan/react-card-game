@@ -36,30 +36,20 @@ export class GameManager {
     this.operatedController = operatedController!;
   }
 
-  // cardは不要な時はnullで受け取る
-  select(
-    type: selectedTypeInterface,
-    card: GameCardStatusInterface | null = null,
-    isEnemy = false
-  ) {
-    //未選択状態
+  cardSelect(card: GameCardStatusInterface, isEnemy = false) {
     if (!this.operatedController.isSelected) {
-      //未選択状態なら必ずカードを選択しているはず
-      if (card == null) {
-        return;
-      }
-      switch (type) {
+      switch (card.location) {
         //手札から選択した時
-        case selectedTypeInterface.HAND:
+        case CardLocation.HAND:
           this.handCardChoice(card);
           break;
-        case selectedTypeInterface.FIELD_FRONT_CARD:
+        case CardLocation.FIELD_FRONT:
           this.fieldFrontCardChoice(card);
           break;
-        case selectedTypeInterface.FIELD_BACK_CARD:
+        case CardLocation.FIELD_BACK:
           this.fieldBackCardChoice(card);
           break;
-        case selectedTypeInterface.ORB_CARD:
+        case CardLocation.ORB:
           this.orbCardChoice(card, isEnemy);
           break;
         default:
@@ -67,33 +57,40 @@ export class GameManager {
       }
     } else {
       // 選択状態
-      switch (type) {
-        case selectedTypeInterface.HAND:
-          if (card) {
-            this.handCardChoice(card);
-            break;
-          }
-        // eslint-disable-next-line no-fallthrough
-        case selectedTypeInterface.FIELD_FRONT:
-          this.toField(isEnemy);
+      switch (card.location) {
+        case CardLocation.HAND:
+          this.handCardChoice(card);
           break;
-        case selectedTypeInterface.FIELD_BACK:
-          this.toField(isEnemy, true);
-          break;
-        case selectedTypeInterface.BONDS:
-          this.toBonds(isEnemy);
-          break;
-        case selectedTypeInterface.FIELD_FRONT_CARD:
-          this.attack(card!);
-          break;
-        case selectedTypeInterface.FIELD_BACK_CARD:
-          this.attack(card!);
+        case CardLocation.FIELD_FRONT:
+        case CardLocation.FIELD_BACK:
+          this.attack(card);
           break;
         default:
           break;
       }
     }
-    if (card) {
+  }
+  // フィールド選択時
+  locationSelect(type: selectedTypeInterface, isEnemy = false) {
+    //未選択状態
+    if (!this.operatedController.isSelected) {
+      return;
+    }
+
+    // 選択状態
+    switch (type) {
+      // eslint-disable-next-line no-fallthrough
+      case selectedTypeInterface.FIELD_FRONT:
+        this.toField(isEnemy);
+        break;
+      case selectedTypeInterface.FIELD_BACK:
+        this.toField(isEnemy, true);
+        break;
+      case selectedTypeInterface.BONDS:
+        this.toBonds(isEnemy);
+        break;
+      default:
+        break;
     }
   }
 
@@ -206,18 +203,15 @@ export class GameManager {
   }
 
   handCardChoice(card: GameCardStatusInterface) {
-    this.operatedController.select(selectedTypeInterface.HAND, card);
+    this.operatedController.select(selectedTypeInterface.NONE, card);
   }
 
   fieldFrontCardChoice(card: GameCardStatusInterface) {
-    this.operatedController.select(
-      selectedTypeInterface.FIELD_FRONT_CARD,
-      card
-    );
+    this.operatedController.select(selectedTypeInterface.NONE, card);
   }
 
   fieldBackCardChoice(card: GameCardStatusInterface) {
-    this.operatedController.select(selectedTypeInterface.FIELD_BACK_CARD, card);
+    this.operatedController.select(selectedTypeInterface.NONE, card);
   }
 
   orbCardChoice(card: GameCardStatusInterface, isEnemy = false) {
@@ -246,10 +240,10 @@ export class GameManager {
     if (selectedCard.is_enemy !== isEnemy) {
       return;
     }
-    const fromType = this.operatedController.fromType;
-    switch (fromType) {
+
+    switch (selectedCard.location) {
       //手札のカードが選択されていた場合
-      case selectedTypeInterface.HAND:
+      case CardLocation.HAND:
         if (this.fromHandValidate(selectedCard, isEnemy, isBack)) {
           return;
         }
@@ -338,7 +332,7 @@ export class GameManager {
 
         break;
       // 前のカードが選択されていた場合
-      case selectedTypeInterface.FIELD_FRONT_CARD:
+      case CardLocation.FIELD_FRONT:
         if (
           this.fromFieldCardValidate(selectedCard, isEnemy) ||
           !isBack ||
@@ -354,7 +348,7 @@ export class GameManager {
 
         break;
       // 後ろのカードが選択されていた時
-      case selectedTypeInterface.FIELD_BACK_CARD:
+      case CardLocation.FIELD_BACK:
         if (
           this.fromFieldCardValidate(selectedCard, isEnemy, true) ||
           isBack ||

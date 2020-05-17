@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState, useEffect } from "react";
 import firebase from "../Firebase";
 import Pagination from "react-js-pagination";

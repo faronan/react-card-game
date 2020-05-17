@@ -1,7 +1,6 @@
 import React from "react";
 import Card from "./Card";
 import { hooksContexts } from "../Game";
-import { selectedTypeInterface } from "../../../interface/SelectedTypeInterface";
 import "../../../css/gameStyle.css";
 
 const Hand = (props: { isEnemy: boolean }) => {
@@ -12,11 +11,7 @@ const Hand = (props: { isEnemy: boolean }) => {
       <div className="card-body">
         <ul className="card_in_hand">
           {hands.map((card) => (
-            <Card
-              card={card}
-              type={selectedTypeInterface.HAND}
-              key={`${card.card_data.id}-${card.id}`}
-            ></Card>
+            <Card card={card} key={`${card.card_data.id}-${card.id}`}></Card>
           ))}
         </ul>
       </div>

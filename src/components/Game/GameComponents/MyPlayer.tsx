@@ -12,11 +12,12 @@ import "../../../css/gameStyle.css";
 
 const MyPlayer = () => {
   const gameManager = React.useContext(hooksContexts);
-  const onBondClick = () => gameManager.select(selectedTypeInterface.BONDS);
+  const onBondClick = () =>
+    gameManager.locationSelect(selectedTypeInterface.BONDS);
   const onFieldFrontClick = () =>
-    gameManager.select(selectedTypeInterface.FIELD_FRONT);
+    gameManager.locationSelect(selectedTypeInterface.FIELD_FRONT);
   const onFieldBackClick = () =>
-    gameManager.select(selectedTypeInterface.FIELD_BACK);
+    gameManager.locationSelect(selectedTypeInterface.FIELD_BACK);
   return (
     <div>
       <div className="my_player">

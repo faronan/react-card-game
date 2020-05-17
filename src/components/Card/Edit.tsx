@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState } from "react";
 import firebase from "../../Firebase";
 import { Link, useHistory, useLocation } from "react-router-dom";

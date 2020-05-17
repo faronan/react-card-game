@@ -13,11 +13,11 @@ import "../../../css/gameStyle.css";
 const EnemyPlayer = () => {
   const gameManager = React.useContext(hooksContexts);
   const onBondsClick = () =>
-    gameManager.select(selectedTypeInterface.BONDS, null, true);
+    gameManager.locationSelect(selectedTypeInterface.BONDS, true);
   const onFieldFrontClick = () =>
-    gameManager.select(selectedTypeInterface.FIELD_FRONT, null, true);
+    gameManager.locationSelect(selectedTypeInterface.FIELD_FRONT, true);
   const onFieldBackClick = () =>
-    gameManager.select(selectedTypeInterface.FIELD_BACK, null, true);
+    gameManager.locationSelect(selectedTypeInterface.FIELD_BACK, true);
   return (
     <div>
       <Hand isEnemy={true}></Hand>

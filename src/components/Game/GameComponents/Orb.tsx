@@ -1,7 +1,6 @@
 import React from "react";
 import Card from "./Card";
 import { hooksContexts } from "../Game";
-import { selectedTypeInterface } from "../../../interface/SelectedTypeInterface";
 import "../../../css/gameStyle.css";
 
 const Orb = (props: { isEnemy: boolean }) => {
@@ -13,7 +12,6 @@ const Orb = (props: { isEnemy: boolean }) => {
       {orb.map((card) => (
         <Card
           card={card}
-          type={selectedTypeInterface.ORB_CARD}
           key={`${card.card_data.id}-${card.id}`}
           isEnemy={props.isEnemy}
         ></Card>
