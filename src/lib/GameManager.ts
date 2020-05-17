@@ -514,8 +514,10 @@ export class GameManager {
       ${attackPowerMessage}${guardPowerMessage}
       合計　: ${attackPower}　　　　　 合計　: ${guardPower}　　　　　　`;
 
-    const defeat = () => {
-      if (isWin) {
+    //攻撃勝利の処理
+    const attackWinFlow = () => {
+      // 回避がなかった時の処理
+      const noAvoidanceFlow = () => {
         if (
           card.card_data.char_name ===
           this.getPlayer(card.is_enemy).heroCardCharName
@@ -533,24 +535,72 @@ export class GameManager {
             (card) => (card.location = CardLocation.EVACUATION)
           );
         }
-      }
-      this.getSupport(card.is_enemy).location = CardLocation.EVACUATION;
-      this.getSupport(selectedAttackCard.is_enemy).location =
-        CardLocation.EVACUATION;
-      //　おまじない
-      this.setPlaterCards(
-        this.getEvacuation(selectedAttackCard.is_enemy)[0],
-        selectedAttackCard.is_enemy
+      };
+      //回避確認
+      const avoidanceCard = this.getHand(card.is_enemy).find(
+        (c) => c.card_data.char_name === card.card_data.char_name
       );
+      if (avoidanceCard) {
+        setTimeout(() => {
+          createDialog(
+            "",
+            `${avoidanceCard.card_data.char_name}は回避しますか?`,
+            () => {
+              avoidanceCard.location = CardLocation.EVACUATION;
+              this.setPlaterCards(avoidanceCard, avoidanceCard.is_enemy);
+            },
+            noAvoidanceFlow
+          );
+        }, 500);
+      } else {
+        //回避なし or 回避せずで同じこの処理を行う
+        noAvoidanceFlow();
+      }
     };
 
-    createDialog(title, message, defeat, null);
-    // 数秒後に確認ダイアログ
-    // setTimeout(() => {
-    //   defeat();
-    //   this.createDialog(title, message, () => console.log("yes"), null);
-    // }, 1000);
-    //終了
+    //防衛勝利の処理
+    const guardWinFlow = () => {
+      //必殺確認
+      const killCard = this.getHand(selectedAttackCard.is_enemy).find(
+        (c) => c.card_data.char_name === selectedAttackCard.card_data.char_name
+      );
+      if (killCard) {
+        setTimeout(() => {
+          createDialog(
+            "",
+            `${killCard.card_data.char_name}の必殺攻撃をしますか?`,
+            () => {
+              killCard.location = CardLocation.EVACUATION;
+              this.setPlaterCards(killCard, killCard.is_enemy);
+              attackWinFlow();
+            },
+            () => {}
+          );
+        }, 500);
+      }
+    };
+
+    createDialog(
+      title,
+      message,
+      () => {
+        if (isWin) {
+          attackWinFlow();
+        } else {
+          guardWinFlow();
+        }
+        //サポート→退避にするのと、行動済みにするのは共通処理
+        this.getSupport(card.is_enemy).location = CardLocation.EVACUATION;
+        this.getSupport(selectedAttackCard.is_enemy).location =
+          CardLocation.EVACUATION;
+        //　おまじない
+        this.setPlaterCards(
+          this.getEvacuation(selectedAttackCard.is_enemy)[0],
+          selectedAttackCard.is_enemy
+        );
+      },
+      null
+    );
 
     this.operatedController.unselect();
   }
