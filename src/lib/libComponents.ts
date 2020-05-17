@@ -5,17 +5,19 @@ export const createDialog = (
   title: string,
   message: string,
   onClickYes: () => void,
-  onClickNo: (() => void) | null
+  onClickNo: (() => void) | null,
+  yesButtonMessage = "Yes",
+  noButtonMessage = "No"
 ) => {
   let buttons = [
     {
-      label: "Yes",
+      label: yesButtonMessage,
       onClick: onClickYes,
     },
   ];
   if (onClickNo) {
     const noButton = {
-      label: "No",
+      label: noButtonMessage,
       onClick: onClickNo,
     };
     buttons = buttons.concat([noButton]);

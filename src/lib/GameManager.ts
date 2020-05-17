@@ -519,12 +519,13 @@ export class GameManager {
       const supportPower = Number(attackSupportCard.card_data.support_power);
       if (supportSucceed) {
         const supportEffect = attackSupportCard.card_data.support_effect;
+        const defaultSupportMessage = `${supportEffect}の紋章　　　　　`;
         switch (supportEffect) {
           case supportEffects.ATTACK:
             return [
               power + supportPower + 20,
               `支援力: ${attackSupportCard.card_data.support_power} 　　　　　`,
-              `${supportEffect}の紋章(+20)　　　`,
+              `${supportEffect}の紋章(+20) 　　`,
             ];
           case supportEffects.DARK:
             //暗闇は相手の状態を変更する
@@ -536,7 +537,7 @@ export class GameManager {
             return [
               power + supportPower,
               `支援力: ${attackSupportCard.card_data.support_power} 　　　　　`,
-              `${supportEffect}の紋章 　　　　　`,
+              defaultSupportMessage,
             ];
           case supportEffects.FLY:
             this.getPlayer(attackSupportCard.is_enemy).setPlayerStatus(
@@ -545,13 +546,13 @@ export class GameManager {
             return [
               power + supportPower,
               `支援力: ${attackSupportCard.card_data.support_power} 　　　　　`,
-              `${supportEffect}の紋章 　　　　　`,
+              defaultSupportMessage,
             ];
           case supportEffects.HERO:
             return [
               power + supportPower,
               `支援力: ${attackSupportCard.card_data.support_power} 　　　　　`,
-              `${supportEffect}の紋章 　　　　　`,
+              defaultSupportMessage,
             ];
           case supportEffects.DORAGON:
             if (
@@ -565,7 +566,7 @@ export class GameManager {
             return [
               power + supportPower,
               `支援力: ${attackSupportCard.card_data.support_power} 　　　　　`,
-              `${supportEffect}の紋章 　　　　　`,
+              defaultSupportMessage,
             ];
           case supportEffects.MAGIC:
             this.draw(attackSupportCard.is_enemy);
@@ -575,7 +576,7 @@ export class GameManager {
             return [
               power + supportPower,
               `支援力: ${attackSupportCard.card_data.support_power} 　　　　　`,
-              `${supportEffect}の紋章 　　　　　`,
+              defaultSupportMessage,
             ];
           default:
             this.draw(attackSupportCard.is_enemy);
@@ -616,7 +617,7 @@ export class GameManager {
           default:
             return [
               power + supportPower,
-              `支援力: ${guardSupportCard.card_data.support_power} 　　　　　　`,
+              `支援力: ${guardSupportCard.card_data.support_power}　　　　　　`,
               "(支援効果なし)　　　　",
             ];
         }
@@ -636,97 +637,119 @@ export class GameManager {
       ${attackSupportEffectMessage}${guardSupportEffectMessage}
       合計　: ${attackPower}　　　　　 合計　: ${guardPower}　　　　　　`;
 
-    //攻撃勝利の処理
-    const attackWinFlow = () => {
-      // 回避がなかった時の処理
-      const noAvoidanceFlow = () => {
+    const avoidanceCard = this.getHand(card.is_enemy).find(
+      (c) => c.card_data.char_name === card.card_data.char_name
+    );
+    const killCard = this.getHand(selectedAttackCard.is_enemy).find(
+      (c) => c.card_data.char_name === selectedAttackCard.card_data.char_name
+    );
+
+    const noAvoidanceFlow = () => {
+      if (
+        card.card_data.char_name ===
+        this.getPlayer(card.is_enemy).heroCardCharName
+      ) {
         if (
-          card.card_data.char_name ===
-          this.getPlayer(card.is_enemy).heroCardCharName
+          attackSupportCard.card_data.support_effect === supportEffects.HERO
         ) {
-          if (
-            attackSupportCard.card_data.support_effect === supportEffects.HERO
-          ) {
-            const orbCards = this.getOrb(card.is_enemy).slice(0, 2);
-            if (orbCards) {
-              orbCards.map((orbCard) => (orbCard.location = CardLocation.HAND));
-            } else {
-              //ゲーム終了時処理
-            }
+          const orbCards = this.getOrb(card.is_enemy).slice(0, 2);
+          if (orbCards) {
+            orbCards.map((orbCard) => (orbCard.location = CardLocation.HAND));
           } else {
-            const orbCard = this.getOrb(card.is_enemy)[1];
-            if (orbCard) {
-              orbCard.location = CardLocation.HAND;
-            } else {
-              //ゲーム終了時処理
-            }
+            //ゲーム終了時処理
           }
         } else {
-          this.getPlayerCardById(card, card.is_enemy).location =
-            CardLocation.EVACUATION;
-          this.getFieldUnderCard(card, card.is_enemy).map(
-            (card) => (card.location = CardLocation.EVACUATION)
-          );
+          const orbCard = this.getOrb(card.is_enemy)[1];
+          if (orbCard) {
+            orbCard.location = CardLocation.HAND;
+          } else {
+            //ゲーム終了時処理
+          }
         }
-        //　おまじない
-        this.setPlaterCards(this.getHand(card.is_enemy)[0], card.is_enemy);
-      };
-      //回避確認
-      const avoidanceCard = this.getHand(card.is_enemy).find(
-        (c) => c.card_data.char_name === card.card_data.char_name
-      );
-      if (avoidanceCard) {
-        setTimeout(() => {
-          createDialog(
-            "",
-            `${avoidanceCard.card_data.char_name}は回避しますか?`,
+      } else {
+        this.getPlayerCardById(card, card.is_enemy).location =
+          CardLocation.EVACUATION;
+        this.getFieldUnderCard(card, card.is_enemy).map(
+          (card) => (card.location = CardLocation.EVACUATION)
+        );
+      }
+      //　おまじない
+      this.setPlaterCards(this.getHand(card.is_enemy)[0], card.is_enemy);
+    };
+
+    const [yesButtonFlow, yesButtonMessage] = (() => {
+      if (isWin) {
+        // 回避がなかった時の処理
+        if (avoidanceCard) {
+          return [
             () => {
               avoidanceCard.location = CardLocation.EVACUATION;
               this.setPlaterCards(avoidanceCard, avoidanceCard.is_enemy);
             },
-            noAvoidanceFlow
-          );
-        }, 300);
+            "回避",
+          ];
+        } else {
+          return [noAvoidanceFlow, "OK"];
+        }
       } else {
-        //回避なし or 回避せずで同じこの処理を行う
-        noAvoidanceFlow();
-      }
-    };
-
-    //防衛勝利の処理
-    const guardWinFlow = () => {
-      //必殺確認
-      const killCard = this.getHand(selectedAttackCard.is_enemy).find(
-        (c) => c.card_data.char_name === selectedAttackCard.card_data.char_name
-      );
-      if (
-        killCard &&
-        guardSupportCard.card_data.support_effect !== supportEffects.PRAY
-      ) {
-        setTimeout(() => {
-          createDialog(
-            "",
-            `${killCard.card_data.char_name}の必殺攻撃をしますか?`,
+        if (
+          killCard &&
+          guardSupportCard.card_data.support_effect !== supportEffects.PRAY
+        ) {
+          return [
             () => {
               killCard.location = CardLocation.EVACUATION;
               this.setPlaterCards(killCard, killCard.is_enemy);
-              attackWinFlow();
+              //必殺に対して回避があるか確認
+              if (avoidanceCard) {
+                setTimeout(() => {
+                  createDialog(
+                    "",
+                    `${avoidanceCard.card_data.char_name}は回避しますか?`,
+                    () => {
+                      avoidanceCard.location = CardLocation.EVACUATION;
+                      this.setPlaterCards(
+                        avoidanceCard,
+                        avoidanceCard.is_enemy
+                      );
+                    },
+                    noAvoidanceFlow
+                  );
+                }, 300);
+              }
             },
-            () => {}
-          );
-        }, 300);
+            "必殺",
+          ];
+        } else {
+          return [() => {}, "OK"];
+        }
       }
-    };
+    })();
+
+    const [noButtonFlow, noButtonMessage] = (() => {
+      if (isWin) {
+        if (avoidanceCard) {
+          return [noAvoidanceFlow, "回避なし"];
+        } else {
+          return [null, ""];
+        }
+      } else {
+        if (
+          killCard &&
+          guardSupportCard.card_data.support_effect !== supportEffects.PRAY
+        ) {
+          return [() => {}, "必殺なし"];
+        } else {
+          return [null, ""];
+        }
+      }
+    })();
 
     createDialog(
       title,
       message,
       () => {
-        if (isWin) {
-          attackWinFlow();
-        } else {
-          guardWinFlow();
-        }
+        (yesButtonFlow as () => void)();
         //サポート→退避にするのと、行動済みにするのは共通処理
         this.getSupport(card.is_enemy).location = CardLocation.EVACUATION;
         this.getSupport(selectedAttackCard.is_enemy).location =
@@ -737,7 +760,9 @@ export class GameManager {
           selectedAttackCard.is_enemy
         );
       },
-      null
+      noButtonFlow as () => void,
+      yesButtonMessage as string,
+      noButtonMessage as string
     );
 
     this.operatedController.unselect();
