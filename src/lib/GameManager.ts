@@ -231,6 +231,13 @@ export class GameManager {
     this.setPlaterCards(drawCard, isEnemy);
   }
 
+  checkBondColor(color: string, isEnemy: boolean) {
+    return (
+      this.getBond(isEnemy).filter((card) => card.card_data.color === color)
+        .length > 0
+    );
+  }
+
   toField(isEnemy: boolean, isBack = false) {
     this.operatedController.unselect();
     const selectedCard = this.operatedController.selectedCard;
@@ -247,7 +254,18 @@ export class GameManager {
         if (this.fromHandValidate(selectedCard, isEnemy, isBack)) {
           return;
         }
-
+        if (
+          !this.checkBondColor(
+            selectedCard.card_data.color,
+            selectedCard.is_enemy
+          )
+        ) {
+          createOkDialog(
+            "",
+            `絆に「${selectedCard.card_data.color}」はありません`
+          );
+          return;
+        }
         // クラスチェンジした場合は早期return
         const classChangeBaseCard = this.getField(isEnemy, isBack).find(
           (card) =>
