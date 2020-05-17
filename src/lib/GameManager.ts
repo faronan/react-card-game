@@ -656,14 +656,24 @@ export class GameManager {
           if (orbCards) {
             orbCards.map((orbCard) => (orbCard.location = CardLocation.HAND));
           } else {
-            //ゲーム終了時処理
+            const message = card.is_enemy
+              ? "あなたの勝ちです！"
+              : "あなたの負けです...";
+            setTimeout(() => {
+              createOkDialog("ゲーム終了", message);
+            }, 300);
           }
         } else {
-          const orbCard = this.getOrb(card.is_enemy)[1];
+          const orbCard = this.getOrb(card.is_enemy)[0];
           if (orbCard) {
             orbCard.location = CardLocation.HAND;
           } else {
-            //ゲーム終了時処理
+            const message = card.is_enemy
+              ? "あなたの勝ちです！"
+              : "あなたの負けです...";
+            setTimeout(() => {
+              createOkDialog("ゲーム終了", message);
+            }, 300);
           }
         }
       } else {
