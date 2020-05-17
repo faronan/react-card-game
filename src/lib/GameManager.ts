@@ -270,7 +270,7 @@ export class GameManager {
                 selectedCard.card_data.over_cost >
                 this.getValidBondCount(isEnemy)
               ) {
-                createOkDialog("警告", "絆の枚数が足りません");
+                createOkDialog("", "絆の枚数が足りません");
                 return;
               }
               this.getBond(isEnemy)
@@ -283,7 +283,7 @@ export class GameManager {
               if (
                 selectedCard.card_data.cost > this.getValidBondCount(isEnemy)
               ) {
-                createOkDialog("警告", "絆の枚数が足りません");
+                createOkDialog("", "絆の枚数が足りません");
                 return;
               }
               this.getBond(isEnemy)
@@ -312,9 +312,9 @@ export class GameManager {
             selectedCard.card_data.over_cost < 1
           ) {
             createDialog(
-              "警告",
+              "",
               classChangeBaseCard.card_data.char_name +
-                "のコストは上がりませんがよろしいですか？",
+                "を「レベルアップ」させますか？",
               levelUp,
               () => {}
             );
@@ -324,7 +324,7 @@ export class GameManager {
         } else {
           // 通常のコストで計算
           if (selectedCard.card_data.cost > this.getValidBondCount(isEnemy)) {
-            createOkDialog("警告", "絆の枚数が足りません");
+            createOkDialog("", "絆の枚数が足りません");
             return;
           }
           this.getBond(isEnemy)
@@ -429,28 +429,53 @@ export class GameManager {
     ) {
       return;
     }
-    //cardが攻撃された側、selectedAttackCardが攻撃する側
-    const attackSupportCard = this.getDeck(card.is_enemy)[0];
-    attackSupportCard.location = CardLocation.SUPPORT;
-    const attackedSupportCard = this.getDeck(selectedAttackCard.is_enemy)[0];
-    attackedSupportCard.location = CardLocation.SUPPORT;
-
     selectedAttackCard.status = CardStatus.DONE;
 
+    //cardが攻撃された側、selectedAttackCardが攻撃する側
+    const attackSupportCard = this.getDeck(selectedAttackCard.is_enemy)[0];
+    attackSupportCard.location = CardLocation.SUPPORT;
+    const guardSupportCard = this.getDeck(card.is_enemy)[0];
+    guardSupportCard.location = CardLocation.SUPPORT;
+
+    const [attackPower, attackPowerMessage] = (() => {
+      const supportSucceed =
+        selectedAttackCard.card_data.char_name !==
+        attackSupportCard.card_data.char_name;
+      const power = Number(selectedAttackCard.card_data.power);
+      const supportPower = Number(attackSupportCard.card_data.support_power);
+      if (supportSucceed) {
+        return [
+          power + supportPower,
+          `支援力: ${attackSupportCard.card_data.support_power} 　　　　　`,
+        ];
+      } else {
+        return [power, "(支援失敗) 　　　　　"];
+      }
+    })();
+
+    const [guardPower, guardPowerMessage] = (() => {
+      const supportSucceed =
+        card.card_data.char_name !== guardSupportCard.card_data.char_name;
+      const power = Number(card.card_data.power);
+      const supportPower = Number(guardSupportCard.card_data.support_power);
+      if (supportSucceed) {
+        return [
+          power + supportPower,
+          `支援力: ${guardSupportCard.card_data.support_power} 　　　　　　`,
+        ];
+      } else {
+        return [power, "(支援失敗) 　　　　　　"];
+      }
+    })();
+
     //TODO: 攻撃時の挙動
-    const guardPower =
-      Number(card.card_data.power) +
-      Number(attackSupportCard.card_data.support_power);
-    const attackPower =
-      Number(selectedAttackCard.card_data.power) +
-      Number(attackedSupportCard.card_data.support_power);
 
     const isWin = attackPower >= guardPower;
     const title = isWin ? "攻撃側の勝利!" : "防御側の勝利!";
     const message = `攻撃　　　　　　　　防衛　　　　　　　　　
     ------------------------------------------------------------
       戦闘力: ${selectedAttackCard.card_data.power}　　　　　 戦闘力: ${card.card_data.power}　　　　　　
-      支援力: ${attackedSupportCard.card_data.support_power}　　　　　 支援力: ${attackSupportCard.card_data.support_power}　　　　　　
+      ${attackPowerMessage}${guardPowerMessage}
       合計　: ${attackPower}　　　　　 合計　: ${guardPower}　　　　　　`;
 
     const defeat = () => {
