@@ -517,7 +517,8 @@ export class GameManager {
     const defeat = () => {
       if (isWin) {
         if (
-          Number(card.card_data.id) === this.getPlayer(card.is_enemy).heroCardId
+          card.card_data.char_name ===
+          this.getPlayer(card.is_enemy).heroCardCharName
         ) {
           const orbCard = this.getOrb(card.is_enemy)[1];
           if (orbCard) {

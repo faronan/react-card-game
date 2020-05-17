@@ -15,7 +15,7 @@ import EnemyPlayer from "./GameComponents/EnemyPlayer";
 import { useGameCardController } from "../../lib/GameCardController";
 
 import "../../css/style.css";
-import { usePalyerController } from "../../lib/PlayerController";
+import { usePlayerController } from "../../lib/PlayerController";
 
 export const hooksContexts = React.createContext<GameManager>(
   new GameManager()
@@ -51,13 +51,15 @@ export const Game = () => {
       .flat();
   };
 
+  const getHeroCharName = (id: number) => {
+    return cards.find((c) => Number(c.id) === id)!.char_name;
+  };
+
   const gameManager = new GameManager(
-    // deckToGameCardStatusArray(myDeck),
-    // deckToGameCardStatusArray(enemyDeck, true),
     useGameCardController(deckToGameCardStatusArray(myDeck)),
-    usePalyerController(myDeck.HeroCardId),
+    usePlayerController(getHeroCharName(myDeck.HeroCardId)),
     useGameCardController(deckToGameCardStatusArray(enemyDeck, true)),
-    usePalyerController(enemyDeck.HeroCardId),
+    usePlayerController(getHeroCharName(enemyDeck.HeroCardId)),
     useOperatedController()
   );
 

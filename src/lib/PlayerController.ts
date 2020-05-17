@@ -1,16 +1,16 @@
 import { useState } from "react";
 
 export interface playerController {
-  heroCardId: number;
+  heroCardCharName: string;
   isBondDone: boolean;
   setIsBondDone: (_: boolean) => void;
 }
 
-export const usePalyerController = (cardId: number) => {
-  const [heroCardId, _] = useState(cardId);
+export const usePlayerController = (cardCharName: string) => {
+  const [heroCardCharName, _] = useState(cardCharName);
   const [isBondDone, setIsBondDone] = useState(false);
   return {
-    heroCardId,
+    heroCardCharName,
     isBondDone,
     setIsBondDone,
   };
