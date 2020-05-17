@@ -10,7 +10,7 @@ export interface playerController {
 }
 
 export const usePlayerController = (cardCharName: string) => {
-  const [heroCardCharName, _] = useState(cardCharName);
+  const [heroCardCharName] = useState(cardCharName);
   const [isBondDone, setIsBondDone] = useState(false);
   const [playerStatus, setPlayerStatus] = useState(PlayerStatusType.NONE);
   return {

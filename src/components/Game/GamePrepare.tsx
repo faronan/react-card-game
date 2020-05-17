@@ -6,7 +6,7 @@ import firebase from "../../Firebase";
 import { CardInterface } from "../../interface/CardInterface";
 import { DeckInterface } from "../../interface/DeckInterface";
 import Modal from "react-modal";
-import { ListGroupItem, ListGroup, Tab, Row, Col } from "react-bootstrap";
+import { ListGroupItem, ListGroup } from "react-bootstrap";
 import "../../css/style.css";
 
 export const GamePrepare = () => {

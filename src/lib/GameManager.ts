@@ -39,6 +39,7 @@ export class GameManager {
   }
 
   cardSelect(card: GameCardStatusInterface, isEnemy = false) {
+    //TODO: 効果発動時のvalidateが相当面倒
     if (!this.operatedController.isSelected) {
       switch (card.location) {
         //手札から選択した時
@@ -213,6 +214,10 @@ export class GameManager {
 
     //プレイヤー系のリセット
     this.getPlayer(isEnemy).setIsBondDone(false);
+    this.getPlayer(isEnemy).setPlayerStatus(PlayerStatusType.FIELD_CARD_MOVE);
+
+    //操作系のリセット
+    this.operatedController.unselect();
   }
 
   handCardChoice(card: GameCardStatusInterface) {
@@ -511,6 +516,7 @@ export class GameManager {
       attackPower,
       attackPowerMessage,
       attackSupportEffectMessage,
+      onCloseAction,
     ] = (() => {
       const supportSucceed =
         selectedAttackCard.card_data.char_name !==
@@ -519,12 +525,13 @@ export class GameManager {
       const supportPower = Number(attackSupportCard.card_data.support_power);
       if (supportSucceed) {
         const supportEffect = attackSupportCard.card_data.support_effect;
+        const defaultSupportPowerMessage = `支援力: ${attackSupportCard.card_data.support_power} 　　　　　`;
         const defaultSupportMessage = `${supportEffect}の紋章　　　　　`;
         switch (supportEffect) {
           case supportEffects.ATTACK:
             return [
               power + supportPower + 20,
-              `支援力: ${attackSupportCard.card_data.support_power} 　　　　　`,
+              defaultSupportPowerMessage,
               `${supportEffect}の紋章(+20) 　　`,
             ];
           case supportEffects.DARK:
@@ -533,27 +540,50 @@ export class GameManager {
               this.getPlayer(!attackSupportCard.is_enemy).setPlayerStatus(
                 PlayerStatusType.HAND_TRASH
               );
+              return [
+                power + supportPower,
+                defaultSupportPowerMessage,
+                defaultSupportMessage,
+                () => {
+                  setTimeout(() => {
+                    createOkDialog("暗闇の紋章", "手札を一枚退避に送る");
+                  });
+                },
+              ];
             }
-            return [
-              power + supportPower,
-              `支援力: ${attackSupportCard.card_data.support_power} 　　　　　`,
-              defaultSupportMessage,
-            ];
+            break;
           case supportEffects.FLY:
             this.getPlayer(attackSupportCard.is_enemy).setPlayerStatus(
               PlayerStatusType.FIELD_CARD_MOVE
             );
             return [
               power + supportPower,
-              `支援力: ${attackSupportCard.card_data.support_power} 　　　　　`,
+              defaultSupportPowerMessage,
               defaultSupportMessage,
+              () => {
+                setTimeout(() => {
+                  createDialog(
+                    "天空の紋章",
+                    "味方を一体移動させますか?",
+                    () => {},
+                    () => {
+                      this.getPlayer(card.is_enemy).setPlayerStatus(
+                        PlayerStatusType.NONE
+                      );
+                    }
+                  );
+                });
+              },
             ];
           case supportEffects.HERO:
-            return [
-              power + supportPower,
-              `支援力: ${attackSupportCard.card_data.support_power} 　　　　　`,
-              defaultSupportMessage,
-            ];
+            if (attackSupportCard.card_data.color === card.card_data.color) {
+              return [
+                power + supportPower,
+                defaultSupportPowerMessage,
+                defaultSupportMessage,
+              ];
+            }
+            break;
           case supportEffects.DORAGON:
             if (
               selectedAttackCard.card_data.color ===
@@ -562,12 +592,27 @@ export class GameManager {
               this.getPlayer(attackSupportCard.is_enemy).setPlayerStatus(
                 PlayerStatusType.HAND_TO_BOND
               );
+              return [
+                power + supportPower,
+                defaultSupportPowerMessage,
+                defaultSupportMessage,
+                () => {
+                  setTimeout(() => {
+                    createDialog(
+                      "竜人の紋章",
+                      "手札を絆エリアに置きますか?",
+                      () => {},
+                      () => {
+                        this.getPlayer(card.is_enemy).setPlayerStatus(
+                          PlayerStatusType.NONE
+                        );
+                      }
+                    );
+                  });
+                },
+              ];
             }
-            return [
-              power + supportPower,
-              `支援力: ${attackSupportCard.card_data.support_power} 　　　　　`,
-              defaultSupportMessage,
-            ];
+            break;
           case supportEffects.MAGIC:
             this.draw(attackSupportCard.is_enemy);
             this.getPlayer(attackSupportCard.is_enemy).setPlayerStatus(
@@ -575,20 +620,23 @@ export class GameManager {
             );
             return [
               power + supportPower,
-              `支援力: ${attackSupportCard.card_data.support_power} 　　　　　`,
+              defaultSupportPowerMessage,
               defaultSupportMessage,
+              setTimeout(() => {
+                createOkDialog(
+                  "魔術の紋章",
+                  "カードを一枚引いて、一枚退避に送る"
+                );
+              }),
             ];
           default:
-            this.draw(attackSupportCard.is_enemy);
-            this.getPlayer(attackSupportCard.is_enemy).setPlayerStatus(
-              PlayerStatusType.HAND_TRASH
-            );
-            return [
-              power + supportPower,
-              `支援力: ${attackSupportCard.card_data.support_power} 　　　　　`,
-              "(支援効果なし) 　　　",
-            ];
+            break;
         }
+        return [
+          power + supportPower,
+          defaultSupportPowerMessage,
+          "(支援効果なし) 　　　",
+        ];
       } else {
         return [power, "(支援失敗) 　　　　　", "(支援失敗) 　　　　　"];
       }
@@ -605,13 +653,13 @@ export class GameManager {
           case supportEffects.GUARDS:
             return [
               power + supportPower + 20,
-              `支援力: ${guardSupportCard.card_data.support_power} 　　　　　`,
+              `支援力: ${guardSupportCard.card_data.support_power}　　　　　　`,
               `${supportEffect}の紋章(+20) 　　`,
             ];
           case supportEffects.PRAY:
             return [
               power + supportPower,
-              `支援力: ${guardSupportCard.card_data.support_power} 　　　　　`,
+              `支援力: ${guardSupportCard.card_data.support_power}　　　　　　`,
               `${supportEffect}の紋章 　　　　　`,
             ];
           default:
@@ -628,7 +676,7 @@ export class GameManager {
 
     //TODO: 攻撃時の挙動
 
-    const isWin = attackPower >= guardPower;
+    const isWin = Number(attackPower) >= guardPower;
     const title = isWin ? "攻撃側の勝利!" : "防御側の勝利!";
     const message = `攻撃　　　　　　　　防衛　　　　　　　　　
     ------------------------------------------------------------
@@ -650,7 +698,8 @@ export class GameManager {
         this.getPlayer(card.is_enemy).heroCardCharName
       ) {
         if (
-          attackSupportCard.card_data.support_effect === supportEffects.HERO
+          attackSupportCard.card_data.support_effect === supportEffects.HERO &&
+          attackSupportCard.card_data.color === card.card_data.color
         ) {
           const orbCards = this.getOrb(card.is_enemy).slice(0, 2);
           if (orbCards) {
@@ -755,6 +804,23 @@ export class GameManager {
       }
     })();
 
+    const fixNoButtonFlow = noButtonFlow
+      ? () => {
+          (noButtonFlow as () => void)();
+          this.getSupport(card.is_enemy).location = CardLocation.EVACUATION;
+          this.getSupport(selectedAttackCard.is_enemy).location =
+            CardLocation.EVACUATION;
+          //　おまじない
+          this.setPlaterCards(
+            this.getEvacuation(selectedAttackCard.is_enemy)[0],
+            selectedAttackCard.is_enemy
+          );
+          if (onCloseAction) {
+            (onCloseAction as () => void)();
+          }
+        }
+      : null;
+
     createDialog(
       title,
       message,
@@ -769,8 +835,11 @@ export class GameManager {
           this.getEvacuation(selectedAttackCard.is_enemy)[0],
           selectedAttackCard.is_enemy
         );
+        if (onCloseAction) {
+          (onCloseAction as () => void)();
+        }
       },
-      noButtonFlow as () => void,
+      fixNoButtonFlow,
       yesButtonMessage as string,
       noButtonMessage as string
     );

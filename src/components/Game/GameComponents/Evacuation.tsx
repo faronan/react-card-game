@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React from "react";
 import Slider from "react-slick";
 import Card from "./Card";
 import { hooksContexts } from "../Game";
