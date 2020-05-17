@@ -182,6 +182,14 @@ export class GameManager {
     }
   }
 
+  getFieldUnderCard(card: GameCardStatusInterface, isEnemy: boolean) {
+    return this.getPlayerCards(isEnemy).filter(
+      (c) =>
+        c.location === CardLocation.FIELD_UNDER_CARD &&
+        c.card_data.char_name === card.card_data.char_name
+    );
+  }
+
   getSupport(isEnemy = false) {
     return this.getPlayerCards(isEnemy).find(
       (c) => c.location === CardLocation.SUPPORT
@@ -520,6 +528,9 @@ export class GameManager {
         } else {
           this.getPlayerCardById(card, card.is_enemy).location =
             CardLocation.EVACUATION;
+          this.getFieldUnderCard(card, card.is_enemy).map(
+            (card) => (card.location = CardLocation.EVACUATION)
+          );
         }
       }
       this.getSupport(card.is_enemy).location = CardLocation.EVACUATION;
