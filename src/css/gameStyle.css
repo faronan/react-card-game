@@ -55,8 +55,40 @@
   position: relative;
 }
 
+.my_player_end {
+  position: relative;
+
+  background-color: #dddddd;
+  background-image: -webkit-gradient(
+      linear,
+      0 0,
+      0 100%,
+      color-stop(0.5, transparent),
+      color-stop(0.5, #ffffff),
+      to(#ffffff)
+    ),
+    -webkit-gradient(linear, 0 0, 100% 0, color-stop(0.5, transparent), color-stop(0.5, #ffffff), to(#ffffff));
+  -webkit-background-size: 5px 5px;
+}
+
 .enemy_player {
   position: relative;
+}
+
+.enemy_player_end {
+  position: relative;
+
+  background-color: #dddddd;
+  background-image: -webkit-gradient(
+      linear,
+      0 0,
+      0 100%,
+      color-stop(0.5, transparent),
+      color-stop(0.5, #ffffff),
+      to(#ffffff)
+    ),
+    -webkit-gradient(linear, 0 0, 100% 0, color-stop(0.5, transparent), color-stop(0.5, #ffffff), to(#ffffff));
+  -webkit-background-size: 5px 5px;
 }
 
 .play_sheet {

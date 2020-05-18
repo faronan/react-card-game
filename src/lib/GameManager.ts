@@ -11,6 +11,7 @@ import { createDialog, createOkDialog } from "./libComponents";
 import { playerController } from "./PlayerController";
 import { supportEffects } from "../interface/CardInterface";
 import { PlayerStatusType } from "../interface/PlayerStatusTypeInterface";
+import { PlayerTurnStatusType } from "../interface/PlayerTurnStatusTypeInterface";
 
 export class GameManager {
   //自プレイヤーのカード
@@ -200,7 +201,12 @@ export class GameManager {
   }
 
   goNextTurn(isEnemy: boolean) {
-    //カード系のリセット
+    this.turnEnd(isEnemy);
+    this.turnBegin(!isEnemy);
+  }
+
+  turnBegin(isEnemy: boolean) {
+    //カード系のリセット(未行動に)
     this.getBond(isEnemy)
       .filter((card) => card.status === CardStatus.DONE)
       .map((card) => (card.status = CardStatus.UNACTION));
@@ -212,12 +218,24 @@ export class GameManager {
       .map((card) => (card.status = CardStatus.UNACTION));
     this.setPlaterCards(this.getPlayerCards(isEnemy)[0], isEnemy);
 
-    //プレイヤー系のリセット
-    this.getPlayer(isEnemy).setIsBondDone(false);
-    this.getPlayer(isEnemy).setPlayerStatus(PlayerStatusType.FIELD_CARD_MOVE);
+    this.getPlayer(isEnemy).setPlayerTurnStatus(PlayerTurnStatusType.BEGIN);
 
+    this.draw(isEnemy);
+    //相手のターン開始時に前衛にカードがない場合、全ての後衛カードを前衛に移動する(進軍)
+    if (this.getField(!isEnemy, false).length === 0) {
+      this.getField(!isEnemy, true).map(
+        (card) => (card.location = CardLocation.FIELD_FRONT)
+      );
+      //this.setPlaterCards(this.getField(!isEnemy, true)[0], !isEnemy);
+    }
+  }
+
+  turnEnd(isEnemy: boolean) {
     //操作系のリセット
     this.operatedController.unselect();
+
+    this.getPlayer(isEnemy).setPlayerStatus(PlayerStatusType.NONE);
+    this.getPlayer(isEnemy).setPlayerTurnStatus(PlayerTurnStatusType.END);
   }
 
   handCardChoice(card: GameCardStatusInterface) {
@@ -307,6 +325,12 @@ export class GameManager {
             "",
             `絆に「${selectedCard.card_data.color}」はありません`
           );
+          return;
+        }
+        //出撃フェイズにしか出撃できない
+        if (
+          this.getPlayer(isEnemy).playerTurnStatus > PlayerTurnStatusType.SORTIE
+        ) {
           return;
         }
         // クラスチェンジした場合は早期return
@@ -416,6 +440,9 @@ export class GameManager {
           this.getPlayerCardById(selectedCard, isEnemy).status =
             CardStatus.DONE;
         }
+        this.getPlayer(isEnemy).setPlayerTurnStatus(
+          PlayerTurnStatusType.ACTION
+        );
 
         break;
       // 後ろのカードが選択されていた時
@@ -442,6 +469,9 @@ export class GameManager {
           this.getPlayerCardById(selectedCard, isEnemy).status =
             CardStatus.DONE;
         }
+        this.getPlayer(isEnemy).setPlayerTurnStatus(
+          PlayerTurnStatusType.ACTION
+        );
         break;
       default:
         break;
@@ -488,10 +518,11 @@ export class GameManager {
     ) {
       return;
     }
-    if (this.getPlayer(isEnemy).isBondDone) {
+    //絆フェイズにしかカードは絆に置けない、置いたら出撃フェイズへ
+    if (this.getPlayer(isEnemy).playerTurnStatus > PlayerTurnStatusType.BOND) {
       return;
     }
-    this.getPlayer(isEnemy).setIsBondDone(true);
+    this.getPlayer(isEnemy).setPlayerTurnStatus(PlayerTurnStatusType.SORTIE);
     this.getPlayerCardById(selectedHand, isEnemy).location = CardLocation.BOND;
   }
 
@@ -505,6 +536,9 @@ export class GameManager {
       return;
     }
     selectedAttackCard.status = CardStatus.DONE;
+    this.getPlayer(selectedAttackCard.is_enemy).setPlayerTurnStatus(
+      PlayerTurnStatusType.ACTION
+    );
 
     //cardが攻撃された側、selectedAttackCardが攻撃する側
     const attackSupportCard = this.getDeck(selectedAttackCard.is_enemy)[0];

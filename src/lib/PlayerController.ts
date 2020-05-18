@@ -1,23 +1,27 @@
 import { useState } from "react";
 import { PlayerStatusType } from "../interface/PlayerStatusTypeInterface";
+import { PlayerTurnStatusType } from "../interface/PlayerTurnStatusTypeInterface";
 
 export interface playerController {
   heroCardCharName: string;
-  isBondDone: boolean;
-  setIsBondDone: (_: boolean) => void;
   playerStatus: PlayerStatusType;
   setPlayerStatus: (_: PlayerStatusType) => void;
+  playerTurnStatus: PlayerTurnStatusType;
+  setPlayerTurnStatus: (_: PlayerTurnStatusType) => void;
 }
 
 export const usePlayerController = (cardCharName: string) => {
   const [heroCardCharName] = useState(cardCharName);
-  const [isBondDone, setIsBondDone] = useState(false);
   const [playerStatus, setPlayerStatus] = useState(PlayerStatusType.NONE);
+  const [playerTurnStatus, setPlayerTurnStatus] = useState(
+    PlayerTurnStatusType.BEGIN
+  );
+
   return {
     heroCardCharName,
-    isBondDone,
-    setIsBondDone,
     playerStatus,
     setPlayerStatus,
+    playerTurnStatus,
+    setPlayerTurnStatus,
   };
 };

@@ -9,6 +9,7 @@ import Support from "./Support";
 import Evacuation from "./Evacuation";
 import Orb from "./Orb";
 import "../../../css/gameStyle.css";
+import { PlayerTurnStatusType } from "../../../interface/PlayerTurnStatusTypeInterface";
 
 const MyPlayer = () => {
   const gameManager = React.useContext(hooksContexts);
@@ -17,8 +18,13 @@ const MyPlayer = () => {
     gameManager.locationSelect(selectedType.FIELD_FRONT);
   const onFieldBackClick = () =>
     gameManager.locationSelect(selectedType.FIELD_BACK);
+
+  const className =
+    gameManager.getPlayer(false).playerTurnStatus === PlayerTurnStatusType.END
+      ? "my_player_end"
+      : "";
   return (
-    <div>
+    <div className={className}>
       <div className="my_player">
         <img
           src={`${process.env.PUBLIC_URL}/play_sheet.jpg`}

@@ -16,6 +16,7 @@ import { useGameCardController } from "../../lib/GameCardController";
 
 import "../../css/style.css";
 import { usePlayerController } from "../../lib/PlayerController";
+import { PlayerTurnStatusType } from "../../interface/PlayerTurnStatusTypeInterface";
 
 export const hooksContexts = React.createContext<GameManager>(
   new GameManager()
@@ -142,6 +143,8 @@ export const Game = () => {
       ...enemyHandCards,
       enemyHeroCard,
     ]);
+
+    gameManager.getPlayer(true).setPlayerTurnStatus(PlayerTurnStatusType.END);
   };
 
   useEffect(() => {
