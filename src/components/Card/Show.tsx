@@ -51,10 +51,10 @@ export const Show = () => {
             }}
             className="btn btn-success"
           >
-            Edit
+            編集
           </Link>
           <button onClick={() => deleteCard(key)} className="btn btn-danger">
-            Delete
+            削除
           </button>
         </div>
       </div>

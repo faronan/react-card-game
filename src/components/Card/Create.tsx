@@ -109,11 +109,11 @@ export const Create = () => {
     <div className="container">
       <div className="panel panel-default">
         <div className="panel-heading">
-          <h3 className="panel-title">ADD CARD</h3>
+          <h3 className="panel-title">カード作成</h3>
         </div>
         <div className="panel-body">
           <h4>
-            <Link to="/">CARD List</Link>
+            <Link to="/">カード一覧</Link>
           </h4>
           <form onSubmit={onSubmit}>
             <div className="form-group row">
@@ -242,7 +242,7 @@ export const Create = () => {
               <div className="col-sm-0">{tagsCheckboxList}</div>
             </div>
             <button type="submit" className="btn btn-success">
-              Submit
+              作成
             </button>
           </form>
         </div>
