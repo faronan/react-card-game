@@ -39,9 +39,16 @@ const Card = (props: { card: GameCardStatusInterface; isEnemy: boolean }) => {
     return isSelected ? className + " card_selected" : className;
   };
 
-  const src = [CardLocation.DECK, CardLocation.ORB].includes(card.location)
-    ? `${process.env.PUBLIC_URL}/card_back_side.jpg`
-    : card.card_data.image;
+  const src = (() => {
+    if (
+      [CardLocation.DECK, CardLocation.ORB].includes(card.location) ||
+      (card.location === CardLocation.BOND &&
+        card.status === CardStatus.REVERSE)
+    ) {
+      return `${process.env.PUBLIC_URL}/card_back_side.jpg`;
+    }
+    return card.card_data.image;
+  })();
 
   // memo: src={`${process.env.PUBLIC_URL}/card.png`}
   return (

@@ -53,6 +53,9 @@ export class GameManager {
         case CardLocation.FIELD_BACK:
           this.fieldBackCardChoice(card);
           break;
+        case CardLocation.BOND:
+          this.bondCardChoice(card, isEnemy);
+          break;
         case CardLocation.ORB:
           this.orbCardChoice(card, isEnemy);
           break;
@@ -168,6 +171,10 @@ export class GameManager {
     );
   }
 
+  getNonReversedBond(isEnemy = false) {
+    return this.getBond(isEnemy).filter((c) => c.status !== CardStatus.REVERSE);
+  }
+
   getValidBondCount(isEnemy = false) {
     return this.getBond(isEnemy).filter(
       (card) => card.status !== CardStatus.DONE
@@ -207,7 +214,7 @@ export class GameManager {
 
   turnBegin(isEnemy: boolean) {
     //カード系のリセット(未行動に)
-    this.getBond(isEnemy)
+    this.getNonReversedBond(isEnemy)
       .filter((card) => card.status === CardStatus.DONE)
       .map((card) => (card.status = CardStatus.UNACTION));
     this.getField(isEnemy, true)
@@ -262,6 +269,12 @@ export class GameManager {
     this.operatedController.select(selectedType.NONE, card);
   }
 
+  bondCardChoice(card: GameCardStatusInterface, isEnemy = false) {
+    const reverseOrbCard = this.getPlayerCardById(card, isEnemy);
+    reverseOrbCard.status = CardStatus.REVERSE;
+    this.setPlaterCards(reverseOrbCard, isEnemy);
+  }
+
   orbCardChoice(card: GameCardStatusInterface, isEnemy = false) {
     const orbToHandCard = this.getPlayerCardById(card, isEnemy);
     orbToHandCard.location = CardLocation.HAND;
@@ -294,8 +307,9 @@ export class GameManager {
 
   checkBondColor(color: string, isEnemy: boolean) {
     return (
-      this.getBond(isEnemy).filter((card) => card.card_data.color === color)
-        .length > 0
+      this.getNonReversedBond(isEnemy).filter(
+        (card) => card.card_data.color === color
+      ).length > 0
     );
   }
 
