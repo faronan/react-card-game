@@ -32,7 +32,7 @@ export const Show = () => {
       <div className="panel panel-default">
         <div className="panel-heading">
           <h4>
-            <Link to="/">Card List</Link>
+            <Link to="/">カード一覧</Link>
           </h4>
           <h3 className="panel-title">{card.char_name}</h3>
         </div>

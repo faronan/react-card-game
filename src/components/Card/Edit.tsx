@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import firebase from "../../Firebase";
 import { Link, useHistory, useLocation } from "react-router-dom";
+import { rangeList, CardRange } from "../../interface/CardInterface";
 import {
   CardInterface,
   cardColors,
   supportEffects,
   cardtags,
 } from "../../interface/CardInterface";
+import "../../css/style.css";
 
 export const Edit = () => {
   const history = useHistory();
@@ -23,9 +25,7 @@ export const Edit = () => {
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const name = e.target.name;
     const value = (() => {
-      if (name !== "tags") {
-        return e.target.value;
-      } else {
+      if (name === "tags") {
         const selectTag: string = e.target.value;
         if (card.tags.includes(selectTag)) {
           return card.tags.filter((c) => c !== selectTag);
@@ -34,6 +34,20 @@ export const Edit = () => {
           return card.tags;
         }
       }
+      if (name === "range") {
+        const mockCardRange = card.range || [];
+        const selectRange = Number(e.target.value) as CardRange;
+        if (mockCardRange.includes(selectRange)) {
+          return card.range.filter((c) => c !== selectRange);
+        } else {
+          if (card.range) {
+            card.range.push(selectRange);
+            return card.range;
+          }
+          return [selectRange];
+        }
+      }
+      return e.target.value;
     })();
     const updateCard = { ...card, [name]: value };
     setCard(updateCard);
@@ -67,6 +81,26 @@ export const Edit = () => {
               checked={color === card.color}
             />
             {color}
+          </label>
+        ))}
+      </ul>
+    );
+  };
+
+  const rangeCheckboxList = (card: CardInterface) => {
+    const mockCardRange = card.range || [];
+    return (
+      <ul>
+        {rangeList.sort().map((range, index) => (
+          <label key={index}>
+            <input
+              type="checkbox"
+              name="range"
+              value={range}
+              onChange={onChange}
+              checked={mockCardRange.includes(range as CardRange)}
+            />
+            {range}
           </label>
         ))}
       </ul>
@@ -119,14 +153,14 @@ export const Edit = () => {
     <div className="container">
       <div className="panel panel-default">
         <div className="panel-heading">
-          <h3 className="panel-title">EDIT CARD</h3>
+          <h3 className="panel-title">カード編集</h3>
         </div>
         <div className="panel-body">
           <h4>
-            <Link to="/">CARD List</Link>
+            <Link to="/">カード一覧</Link>
           </h4>
           <button className="btn btn-danger" onClick={back}>
-            Back
+            戻る
           </button>
           <form onSubmit={onSubmit}>
             <div className="form-group row">
@@ -157,7 +191,7 @@ export const Edit = () => {
                 />
               </div>
               <div className="col-sm-2">
-                <img src={`${card.image}`} alt="" />
+                <img src={`${card.image}`} alt="" className="show-card-image" />
               </div>
             </div>
             <div className="form-group row">
@@ -223,6 +257,12 @@ export const Edit = () => {
               </div>
             </div>
             <div className="form-group row">
+              <label htmlFor="tags" className="col-sm-2 col-form-label">
+                射程<span style={{ color: "red" }}>(複数選択可)</span>:
+              </label>
+              <div className="col-sm-0">{rangeCheckboxList(card)}</div>
+            </div>
+            <div className="form-group row">
               <label
                 htmlFor="support_power"
                 className="col-sm-2 col-form-label"
@@ -255,7 +295,7 @@ export const Edit = () => {
               <div className="col-sm-0">{tagsCheckboxList(card)}</div>
             </div>
             <button type="submit" className="btn btn-success">
-              Submit
+              保存
             </button>
           </form>
         </div>

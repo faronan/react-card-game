@@ -546,7 +546,10 @@ export class GameManager {
                 defaultSupportMessage,
                 () => {
                   setTimeout(() => {
-                    createOkDialog("暗闇の紋章", "手札を一枚退避に送る");
+                    createOkDialog(
+                      `${supportEffect}の紋章`,
+                      "手札を一枚退避に送る"
+                    );
                   });
                 },
               ];
@@ -563,7 +566,7 @@ export class GameManager {
               () => {
                 setTimeout(() => {
                   createDialog(
-                    "天空の紋章",
+                    `${supportEffect}の紋章`,
                     "味方を一体移動させますか?",
                     () => {},
                     () => {
@@ -599,7 +602,7 @@ export class GameManager {
                 () => {
                   setTimeout(() => {
                     createDialog(
-                      "竜人の紋章",
+                      `${supportEffect}の紋章`,
                       "手札を絆エリアに置きますか?",
                       () => {},
                       () => {
@@ -624,7 +627,7 @@ export class GameManager {
               defaultSupportMessage,
               setTimeout(() => {
                 createOkDialog(
-                  "魔術の紋章",
+                  `${supportEffect}の紋章`,
                   "カードを一枚引いて、一枚退避に送る"
                 );
               }),

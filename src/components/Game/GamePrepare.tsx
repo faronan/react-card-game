@@ -103,7 +103,7 @@ export const GamePrepare = () => {
         </div>
         <div className="panel-body">
           <h4>
-            <Link to="/">Card List</Link>
+            <Link to="/">カード一覧</Link>
           </h4>
           <div className="row">
             <div className="col-sm-6">

@@ -160,6 +160,11 @@ p {
   margin-top: 20px;
 }
 
+.show-card-image {
+  width: 70%;
+  height: auto;
+}
+
 .list-image {
   width: 30%;
   height: auto;

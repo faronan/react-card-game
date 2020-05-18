@@ -7,6 +7,7 @@ import {
   supportEffects,
   cardtags,
 } from "../../interface/CardInterface";
+import "../../css/style.css";
 
 export const Create = () => {
   const initialCard: CardInterface = {
@@ -17,6 +18,7 @@ export const Create = () => {
     cost: 0,
     over_cost: 0,
     power: 0,
+    range: [1],
     support_power: 0,
     support_effect: "無し",
     tags: [],

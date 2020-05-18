@@ -14,6 +14,13 @@ export const Home = () => {
     setPage(pageNumber);
   };
 
+  const formatRange = (range: number[]) => {
+    if (range && range.length > 1) {
+      return `${Math.min(...range)}-${Math.max(...range)}`;
+    }
+    return range;
+  };
+
   useEffect(() => {
     (async () => {
       firebase
@@ -47,12 +54,12 @@ export const Home = () => {
     <div className="container">
       <div className="panel panel-default">
         <div className="panel-heading">
-          <h3 className="panel-title">Card List</h3>
+          <h3 className="panel-title">カード一覧</h3>
         </div>
         <div className="panel-body">
           <h4>
             <Link to="/create" className="btn btn-primary">
-              Create Card
+              カード作成
             </Link>
             <Link
               to={{
@@ -61,7 +68,7 @@ export const Home = () => {
               }}
               className="btn btn-success"
             >
-              Deck List
+              デッキ一覧
             </Link>
             <Link
               to={{
@@ -95,6 +102,7 @@ export const Home = () => {
                 <th>コスト</th>
                 <th>CCコスト</th>
                 <th>戦闘力</th>
+                <th>射程</th>
                 <th>支援</th>
                 <th>支援効果</th>
                 <th>タグ</th>
@@ -121,6 +129,7 @@ export const Home = () => {
                   <td>{card.cost}</td>
                   <td>{card.over_cost}</td>
                   <td>{card.power}</td>
+                  <td>{formatRange(card.range)}</td>
                   <td>{card.support_power}</td>
                   <td>{card.support_effect}</td>
                   <td>{card.tags.join("\n")}</td>

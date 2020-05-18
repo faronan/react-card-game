@@ -90,11 +90,11 @@ export const Deck = () => {
     <div className="container">
       <div className="panel panel-default">
         <div className="panel-heading">
-          <h3 className="panel-title">Deck List</h3>
+          <h3 className="panel-title">デッキ一覧</h3>
         </div>
         <div className="panel-body">
           <h4>
-            <Link to="/">Card List</Link>
+            <Link to="/">カード一覧</Link>
           </h4>
           <div className="row">
             <div className="col-sm-4 table-responsive">
