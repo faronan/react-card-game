@@ -64,16 +64,18 @@ export const Game = () => {
     useOperatedController()
   );
 
-  const shuffle = ([...arr]) => {
-    let m = arr.length;
-    while (m) {
-      const i = Math.floor(Math.random() * m--);
-      [arr[m], arr[i]] = [arr[i], arr[m]];
-    }
-    return arr;
-  };
-
   const initialize = () => {
+    const INITIAL_HAND_COUNT = 6;
+    const INITIAL_ORB_COUNT = 5;
+    const shuffle = ([...arr]) => {
+      let m = arr.length;
+      while (m) {
+        const i = Math.floor(Math.random() * m--);
+        [arr[m], arr[i]] = [arr[i], arr[m]];
+      }
+      return arr;
+    };
+
     const shuffledMyDeck: GameCardStatusInterface[] = shuffle(
       gameManager.getDeck(false)
     );
@@ -84,18 +86,18 @@ export const Game = () => {
 
     const newMyDeck = shuffledMyDeck.filter((card) => card !== myHeroCard);
 
-    const myOrbCards = [...Array(5)].map((_, i) => {
+    const myOrbCards = [...Array(INITIAL_ORB_COUNT)].map((_, i) => {
       const myOrbCard = newMyDeck[i];
       myOrbCard.location = CardLocation.ORB;
       return myOrbCard;
     });
-    const myHandCards = [...Array(5)].map((_, i) => {
-      const myHandCard = newMyDeck[i + 5];
+    const myHandCards = [...Array(INITIAL_HAND_COUNT)].map((_, i) => {
+      const myHandCard = newMyDeck[i + INITIAL_ORB_COUNT];
       myHandCard.location = CardLocation.HAND;
       return myHandCard;
     });
     const myOtherHeroCard = newMyDeck
-      .slice(10, 1000)
+      .slice(INITIAL_HAND_COUNT + INITIAL_ORB_COUNT, 1000)
       .filter(
         (c) => c.id !== myHeroCard.id || c.card_data !== myHeroCard.card_data
       );
@@ -119,19 +121,19 @@ export const Game = () => {
       (card) => card !== enemyHeroCard
     );
 
-    const enemyOrbCards = [...Array(5)].map((_, i) => {
+    const enemyOrbCards = [...Array(INITIAL_ORB_COUNT)].map((_, i) => {
       const enemyOrbCard = newEnemyDeck[i];
       enemyOrbCard.location = CardLocation.ORB;
       return enemyOrbCard;
     });
-    const enemyHandCards = [...Array(5)].map((_, i) => {
-      const enemyHandCard = newEnemyDeck[i + 5];
+    const enemyHandCards = [...Array(INITIAL_HAND_COUNT)].map((_, i) => {
+      const enemyHandCard = newEnemyDeck[i + INITIAL_ORB_COUNT];
       enemyHandCard.location = CardLocation.HAND;
       return enemyHandCard;
     });
 
     const enemyOtherHeroCards = newEnemyDeck
-      .slice(10, 1000)
+      .slice(INITIAL_ORB_COUNT + INITIAL_HAND_COUNT, 1000)
       .filter(
         (c) =>
           c.id !== enemyHeroCard.id || c.card_data !== enemyHeroCard.card_data
