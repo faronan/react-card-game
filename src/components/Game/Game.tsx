@@ -77,10 +77,10 @@ export const Game = () => {
     };
 
     const shuffledMyDeck: GameCardStatusInterface[] = shuffle(
-      gameManager.getDeck(false)
+      gameManager.getDeck()
     );
     const myHeroCard = gameManager
-      .getPlayerCards(false)
+      .getPlayerCards()
       .find((c) => Number(c.cardData.id) === myDeck.HeroCardId)!;
     myHeroCard.location = CardLocation.FIELD_FRONT;
 
@@ -147,6 +147,7 @@ export const Game = () => {
     ]);
 
     gameManager.getPlayer(true).setPlayerTurnStatus(PlayerTurnStatusType.END);
+    gameManager.getPlayer(false).addTurnCount();
   };
 
   useEffect(() => {

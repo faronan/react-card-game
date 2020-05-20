@@ -8,6 +8,8 @@ export interface playerController {
   setPlayerStatus: (_: PlayerStatusType) => void;
   playerTurnStatus: PlayerTurnStatusType;
   setPlayerTurnStatus: (_: PlayerTurnStatusType) => void;
+  turnCount: number;
+  addTurnCount: () => void;
 }
 
 export const usePlayerController = (cardCharName: string) => {
@@ -16,6 +18,10 @@ export const usePlayerController = (cardCharName: string) => {
   const [playerTurnStatus, setPlayerTurnStatus] = useState(
     PlayerTurnStatusType.BEGIN
   );
+  const [turnCount, setTurnCount] = useState(0);
+  const addTurnCount = () => {
+    setTurnCount((prevCount) => prevCount + 1);
+  };
 
   return {
     heroCardCharName,
@@ -23,5 +29,7 @@ export const usePlayerController = (cardCharName: string) => {
     setPlayerStatus,
     playerTurnStatus,
     setPlayerTurnStatus,
+    turnCount,
+    addTurnCount,
   };
 };

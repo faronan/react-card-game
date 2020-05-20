@@ -42,6 +42,20 @@ const EnemyPlayer = () => {
         <div className="enemy_deck">
           <Deck isEnemy={true}></Deck>
         </div>
+        {
+          // マリガンのタイミングは相手にMyPlayerに合わせる + EnemyPlayerはマリガン後にターン数が1になる
+          gameManager.getPlayer().turnCount === 1 &&
+            gameManager.getPlayer(true).turnCount === 0 &&
+            gameManager.getPlayer().playerTurnStatus ===
+              PlayerTurnStatusType.BEGIN && (
+              <button
+                className="enemy-mulligan-button"
+                onClick={() => gameManager.mulligan(true)}
+              >
+                引き直し
+              </button>
+            )
+        }
         <button
           className="enemy-turn-end-button"
           onClick={() => gameManager.goNextTurn(true)}

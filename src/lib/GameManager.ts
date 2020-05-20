@@ -103,7 +103,7 @@ export class GameManager {
   }
 
   // カード系は最初にこの関数を通すことで他の処理を共通化する
-  getPlayerCards(isEnemy: boolean) {
+  getPlayerCards(isEnemy = false) {
     if (isEnemy) {
       return this.enemyPlayerCards.playerCards;
     } else {
@@ -112,7 +112,7 @@ export class GameManager {
   }
 
   // プレイヤー系は最初にこの関数を通すことで他の処理を共通化する
-  getPlayer(isEnemy: boolean) {
+  getPlayer(isEnemy = false) {
     if (isEnemy) {
       return this.player;
     } else {
@@ -207,7 +207,7 @@ export class GameManager {
     )!;
   }
 
-  goNextTurn(isEnemy: boolean) {
+  goNextTurn(isEnemy = false) {
     this.turnEnd(isEnemy);
     this.turnBegin(!isEnemy);
   }
@@ -238,6 +238,7 @@ export class GameManager {
   }
 
   turnEnd(isEnemy: boolean) {
+    this.getPlayer(isEnemy).addTurnCount();
     //操作系のリセット
     this.operatedController.unselect();
 
@@ -301,6 +302,33 @@ export class GameManager {
     this.setPlaterCards(deckDrawCard);
   }
 
+  mulligan(isEnemy = false) {
+    const INITIAL_HAND_COUNT = 6;
+    const shuffle = ([...arr]) => {
+      let m = arr.length;
+      while (m) {
+        const i = Math.floor(Math.random() * m--);
+        [arr[m], arr[i]] = [arr[i], arr[m]];
+      }
+      return arr;
+    };
+    const newDeck = shuffle([
+      ...this.getDeck(isEnemy),
+      ...this.getHand(isEnemy),
+    ]);
+    newDeck
+      .slice(0, INITIAL_HAND_COUNT)
+      .map((card) => (card.location = CardLocation.HAND));
+    newDeck
+      .slice(INITIAL_HAND_COUNT, 1000)
+      .map((card) => (card.location = CardLocation.DECK));
+    if (!isEnemy) {
+      this.getPlayer(isEnemy).setPlayerTurnStatus(PlayerTurnStatusType.BOND);
+    } else {
+      this.getPlayer(isEnemy).addTurnCount();
+    }
+  }
+
   checkBondColor(color: string, isEnemy: boolean) {
     return (
       this.getNonReversedBond(isEnemy).filter(
@@ -338,7 +366,7 @@ export class GameManager {
   ) {
     //1.出撃フェイズ 2.選択した場と逆(前or後)に同名のカードが存在しない
     if (
-      this.getPlayer(isEnemy).playerTurnStatus > PlayerTurnStatusType.SORTIE ||
+      this.getPlayer(isEnemy).playerTurnStatus >= PlayerTurnStatusType.SORTIE ||
       this.getField(isEnemy, !isBack).filter(
         (c) => c.cardData.char_name === card.cardData.char_name
       ).length > 0
@@ -477,7 +505,7 @@ export class GameManager {
     if (
       selectedHand === null ||
       this.handChoicedValidate(selectedHand, isEnemy) ||
-      this.getPlayer(isEnemy).playerTurnStatus > PlayerTurnStatusType.BOND
+      this.getPlayer(isEnemy).playerTurnStatus >= PlayerTurnStatusType.BOND
     ) {
       return;
     }

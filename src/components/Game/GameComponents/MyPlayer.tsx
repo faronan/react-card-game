@@ -20,7 +20,7 @@ const MyPlayer = () => {
     gameManager.locationSelect(selectedType.FIELD_BACK);
 
   const className =
-    gameManager.getPlayer(false).playerTurnStatus === PlayerTurnStatusType.END
+    gameManager.getPlayer().playerTurnStatus === PlayerTurnStatusType.END
       ? "my_player_end"
       : "";
   return (
@@ -43,9 +43,19 @@ const MyPlayer = () => {
         <div className="my_deck">
           <Deck></Deck>
         </div>
+        {gameManager.getPlayer().turnCount === 1 &&
+          gameManager.getPlayer().playerTurnStatus ===
+            PlayerTurnStatusType.BEGIN && (
+            <button
+              className="my-mulligan-button"
+              onClick={() => gameManager.mulligan()}
+            >
+              引き直し
+            </button>
+          )}
         <button
           className="my-turn-end-button"
-          onClick={() => gameManager.goNextTurn(false)}
+          onClick={() => gameManager.goNextTurn()}
         >
           ターン終了
         </button>

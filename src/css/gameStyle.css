@@ -286,9 +286,45 @@
   font-size: 50%;
 }
 
+.my-mulligan-button {
+  position: absolute;
+  top: 68%;
+  left: 90%;
+  display: inline-block;
+  text-decoration: none;
+  color: #fff;
+  width: 10%;
+  height: 15%;
+  line-height: 1;
+  border-radius: 50%;
+  text-align: center;
+  overflow: hidden;
+  background-image: linear-gradient(45deg, #709dff 0%, #91fdb7 100%);
+  transition: 0.4s;
+  font-size: 50%;
+}
+
 .enemy-turn-end-button {
   position: absolute;
   top: 0%;
+  left: 0%;
+  display: inline-block;
+  text-decoration: none;
+  color: #fff;
+  width: 10%;
+  height: 15%;
+  line-height: 1;
+  border-radius: 50%;
+  text-align: center;
+  overflow: hidden;
+  background-image: linear-gradient(45deg, #709dff 0%, #91fdb7 100%);
+  transition: 0.4s;
+  font-size: 50%;
+}
+
+.enemy-mulligan-button {
+  position: absolute;
+  top: 15%;
   left: 0%;
   display: inline-block;
   text-decoration: none;
