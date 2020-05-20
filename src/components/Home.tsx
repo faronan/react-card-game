@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import firebase from "../Firebase";
 import Pagination from "react-js-pagination";
 import { Link } from "react-router-dom";
-import { CardInterface } from "../interface/CardInterface";
+import { CardInterface, supportEffects } from "../interface/CardInterface";
 import "../css/style.css";
 
 export const Home = () => {
@@ -17,6 +17,9 @@ export const Home = () => {
   const formatRange = (range: number[]) => {
     if (range && range.length > 1) {
       return `${Math.min(...range)}-${Math.max(...range)}`;
+    }
+    if (range && range[0] === 0) {
+      return "-";
     }
     return range;
   };
@@ -103,7 +106,7 @@ export const Home = () => {
                 <th>CCコスト</th>
                 <th>戦闘力</th>
                 <th>射程</th>
-                <th>支援</th>
+                <th>支援力</th>
                 <th>支援効果</th>
                 <th>タグ</th>
               </tr>
@@ -127,11 +130,15 @@ export const Home = () => {
                   <td>{card.color}</td>
                   <td>{card.char_name}</td>
                   <td>{card.cost}</td>
-                  <td>{card.over_cost}</td>
+                  <td>{card.over_cost || ""}</td>
                   <td>{card.power}</td>
                   <td>{formatRange(card.range)}</td>
                   <td>{card.support_power}</td>
-                  <td>{card.support_effect}</td>
+                  <td>
+                    {card.support_effect !== supportEffects.NONE
+                      ? card.support_effect
+                      : ""}
+                  </td>
                   <td>{card.tags.join("\n")}</td>
                 </tr>
               ))}

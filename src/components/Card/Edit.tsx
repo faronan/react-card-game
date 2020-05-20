@@ -53,13 +53,24 @@ export const Edit = () => {
     setCard(updateCard);
   };
 
+  const typeFixCard = (card: CardInterface) => {
+    return {
+      ...card,
+      id: Number(card.id),
+      cost: Number(card.cost),
+      over_cost: Number(card.over_cost),
+      power: Number(card.power),
+      support_power: Number(card.support_power),
+    };
+  };
+
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     firebase
       .firestore()
       .collection("cards")
       .doc(key)
-      .set(card)
+      .set(typeFixCard(card))
       .then((a) => {
         history.push("/");
       })
@@ -237,7 +248,7 @@ export const Edit = () => {
                   type="number"
                   className="form-control"
                   name="over_cost"
-                  value={card.over_cost ? card.over_cost : "無し"}
+                  value={card.over_cost}
                   onChange={onChange}
                 />
               </div>

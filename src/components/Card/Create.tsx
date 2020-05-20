@@ -190,7 +190,7 @@ export const Create = () => {
                   type="number"
                   className="form-control"
                   name="over_cost"
-                  value={card.over_cost ? card.over_cost : "無し"}
+                  value={card.over_cost}
                   onChange={onChange}
                 />
               </div>

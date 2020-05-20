@@ -447,9 +447,7 @@ export class GameManager {
         const classChangeBaseCard = this.getField(isEnemy, isBack).find(
           (card) => card.cardData.char_name === selectedCard.cardData.char_name
         );
-        const isCc =
-          selectedCard.cardData.over_cost !== null &&
-          selectedCard.cardData.over_cost > 0;
+        const isCc = selectedCard.cardData.over_cost > 0;
         //同名カードがあるか
         if (classChangeBaseCard) {
           if (!isCc) {
