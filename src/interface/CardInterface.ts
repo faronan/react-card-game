@@ -3,13 +3,13 @@ export interface CardInterface {
   id: number;
   image: string;
   color: CardColors;
-  char_name: string;
+  charName: string;
   cost: number;
-  over_cost: number;
+  overCost: number;
   power: number;
   range: CardRange[];
-  support_power: number;
-  support_effect: SupportEffects;
+  supportPower: number;
+  supportEffect: SupportEffects;
   tags: CardTags[];
 }
 

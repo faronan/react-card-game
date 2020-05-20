@@ -97,7 +97,7 @@ export const DeckEdit = (props: {
     <div>
       <form className="form-inline" onSubmit={onSubmit}>
         <div className="form-group">
-          <label htmlFor="char_name" className="col-form-label">
+          <label htmlFor="charName" className="col-form-label">
             デッキ名:
           </label>
           <div className="col-sm-4">

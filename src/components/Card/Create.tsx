@@ -14,13 +14,13 @@ export const Create = () => {
     id: 0,
     image: "",
     color: "赤",
-    char_name: "",
+    charName: "",
     cost: 0,
-    over_cost: 0,
+    overCost: 0,
     power: 0,
     range: [1],
-    support_power: 0,
-    support_effect: "無し",
+    supportPower: 0,
+    supportEffect: "無し",
     tags: [],
   };
   const [card, setCard] = useState<CardInterface>(initialCard);
@@ -83,10 +83,10 @@ export const Create = () => {
         <label key={index}>
           <input
             type="checkbox"
-            name="support_effect"
+            name="supportEffect"
             value={effect}
             onChange={onChange}
-            checked={effect === card.support_effect}
+            checked={effect === card.supportEffect}
           />
           {effect}
         </label>
@@ -154,15 +154,15 @@ export const Create = () => {
               <div className="col-sm-0">{colorCheckboxList}</div>
             </div>
             <div className="form-group row">
-              <label htmlFor="char_name" className="col-sm-2 col-form-label">
+              <label htmlFor="charName" className="col-sm-2 col-form-label">
                 キャラクター名:
               </label>
               <div className="col-sm-4">
                 <input
                   type="text"
                   className="form-control"
-                  name="char_name"
-                  value={card.char_name}
+                  name="charName"
+                  value={card.charName}
                   onChange={onChange}
                 />
               </div>
@@ -182,15 +182,15 @@ export const Create = () => {
               </div>
             </div>
             <div className="form-group row">
-              <label htmlFor="over_cost" className="col-sm-2 col-form-label">
+              <label htmlFor="overCost" className="col-sm-2 col-form-label">
                 CCコスト:
               </label>
               <div className="col-sm-2">
                 <input
                   type="number"
                   className="form-control"
-                  name="over_cost"
-                  value={card.over_cost}
+                  name="overCost"
+                  value={card.overCost}
                   onChange={onChange}
                 />
               </div>
@@ -210,25 +210,22 @@ export const Create = () => {
               </div>
             </div>
             <div className="form-group row">
-              <label
-                htmlFor="support_power"
-                className="col-sm-2 col-form-label"
-              >
+              <label htmlFor="supportPower" className="col-sm-2 col-form-label">
                 支援:
               </label>
               <div className="col-sm-2">
                 <input
                   type="number"
                   className="form-control"
-                  name="support_power"
-                  value={card.support_power}
+                  name="supportPower"
+                  value={card.supportPower}
                   onChange={onChange}
                 />
               </div>
             </div>
             <div className="form-group row">
               <label
-                htmlFor="support_effect"
+                htmlFor="supportEffect"
                 className="col-sm-2 col-form-label"
               >
                 支援効果<span style={{ color: "red" }}>(必須)</span>:

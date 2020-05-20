@@ -34,7 +34,7 @@ export const Show = () => {
           <h4>
             <Link to="/">カード一覧</Link>
           </h4>
-          <h3 className="panel-title">{card.char_name}</h3>
+          <h3 className="panel-title">{card.charName}</h3>
         </div>
         <div className="panel-body">
           <dl>

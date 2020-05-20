@@ -53,7 +53,7 @@ export const Game = () => {
   };
 
   const getHeroCharName = (id: number) => {
-    return cards.find((c) => Number(c.id) === id)!.char_name;
+    return cards.find((c) => Number(c.id) === id)!.charName;
   };
 
   const gameManager = new GameManager(

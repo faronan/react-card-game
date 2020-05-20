@@ -197,7 +197,7 @@ export class GameManager {
     return this.getPlayerCards(isEnemy).filter(
       (c) =>
         c.location === CardLocation.FIELD_UNDER_CARD &&
-        c.cardData.char_name === card.cardData.char_name
+        c.cardData.charName === card.cardData.charName
     );
   }
 
@@ -281,7 +281,7 @@ export class GameManager {
   evacuationCardChoice(card: GameCardStatusInterface) {
     createDialog(
       "",
-      `${card.cardData.cost}コスト「${card.cardData.char_name}」を回収しますか？`,
+      `${card.cardData.cost}コスト「${card.cardData.charName}」を回収しますか？`,
       () => {
         const evacuationToHandCard = this.getPlayerCardById(card);
         evacuationToHandCard.location = CardLocation.HAND;
@@ -368,7 +368,7 @@ export class GameManager {
     if (
       this.getPlayer(isEnemy).playerTurnStatus >= PlayerTurnStatusType.SORTIE ||
       this.getField(isEnemy, !isBack).filter(
-        (c) => c.cardData.char_name === card.cardData.char_name
+        (c) => c.cardData.charName === card.cardData.charName
       ).length > 0
     ) {
       return true;
@@ -407,7 +407,7 @@ export class GameManager {
     baseCard: GameCardStatusInterface | null = null
   ) {
     const isEnemy = card.isEnemy;
-    const cost = isCc ? card.cardData.over_cost : card.cardData.cost;
+    const cost = isCc ? card.cardData.overCost : card.cardData.cost;
     if (cost > this.getValidBondCount(isEnemy)) {
       createOkDialog("", "絆の枚数が足りません");
       return false;
@@ -445,15 +445,15 @@ export class GameManager {
         }
 
         const classChangeBaseCard = this.getField(isEnemy, isBack).find(
-          (card) => card.cardData.char_name === selectedCard.cardData.char_name
+          (card) => card.cardData.charName === selectedCard.cardData.charName
         );
-        const isCc = selectedCard.cardData.over_cost > 0;
+        const isCc = selectedCard.cardData.overCost > 0;
         //同名カードがあるか
         if (classChangeBaseCard) {
           if (!isCc) {
             createDialog(
               "",
-              classChangeBaseCard.cardData.char_name +
+              classChangeBaseCard.cardData.charName +
                 "を「レベルアップ」させますか？",
               () => {
                 this.sortie(selectedCard, isBack, isCc, classChangeBaseCard);
@@ -547,12 +547,12 @@ export class GameManager {
       onCloseAction,
     ] = (() => {
       const supportSucceed =
-        attackCard.cardData.char_name !== attackSupportCard.cardData.char_name;
+        attackCard.cardData.charName !== attackSupportCard.cardData.charName;
       const power = Number(attackCard.cardData.power);
-      const supportPower = Number(attackSupportCard.cardData.support_power);
+      const supportPower = Number(attackSupportCard.cardData.supportPower);
       if (supportSucceed) {
-        const supportEffect = attackSupportCard.cardData.support_effect;
-        const defaultSupportPowerMessage = `支援力: ${attackSupportCard.cardData.support_power} 　　　　　`;
+        const supportEffect = attackSupportCard.cardData.supportEffect;
+        const defaultSupportPowerMessage = `支援力: ${attackSupportCard.cardData.supportPower} 　　　　　`;
         const defaultSupportMessage = `${supportEffect}の紋章　　　　　`;
         switch (supportEffect) {
           case supportEffects.ATTACK:
@@ -675,28 +675,28 @@ export class GameManager {
 
     const [guardPower, guardPowerMessage, guardSupportEffectMessage] = (() => {
       const supportSucceed =
-        guardCard.cardData.char_name !== guardSupportCard.cardData.char_name;
+        guardCard.cardData.charName !== guardSupportCard.cardData.charName;
       const power = Number(guardCard.cardData.power);
-      const supportPower = Number(guardSupportCard.cardData.support_power);
+      const supportPower = Number(guardSupportCard.cardData.supportPower);
       if (supportSucceed) {
-        const supportEffect = guardSupportCard.cardData.support_effect;
+        const supportEffect = guardSupportCard.cardData.supportEffect;
         switch (supportEffect) {
           case supportEffects.GUARDS:
             return [
               power + supportPower + 20,
-              `支援力: ${guardSupportCard.cardData.support_power}　　　　　　`,
+              `支援力: ${guardSupportCard.cardData.supportPower}　　　　　　`,
               `${supportEffect}の紋章(+20) 　　`,
             ];
           case supportEffects.PRAY:
             return [
               power + supportPower,
-              `支援力: ${guardSupportCard.cardData.support_power}　　　　　　`,
+              `支援力: ${guardSupportCard.cardData.supportPower}　　　　　　`,
               `${supportEffect}の紋章 　　　　　`,
             ];
           default:
             return [
               power + supportPower,
-              `支援力: ${guardSupportCard.cardData.support_power}　　　　　　`,
+              `支援力: ${guardSupportCard.cardData.supportPower}　　　　　　`,
               "(支援効果なし)　　　　",
             ];
         }
@@ -715,19 +715,19 @@ export class GameManager {
       合計　: ${attackPower}　　　　　 合計　: ${guardPower}　　　　　　`;
 
     const avoidanceCard = this.getHand(guardCard.isEnemy).find(
-      (c) => c.cardData.char_name === guardCard.cardData.char_name
+      (c) => c.cardData.charName === guardCard.cardData.charName
     );
     const killCard = this.getHand(attackCard.isEnemy).find(
-      (c) => c.cardData.char_name === attackCard.cardData.char_name
+      (c) => c.cardData.charName === attackCard.cardData.charName
     );
 
     const noAvoidanceFlow = () => {
       if (
-        guardCard.cardData.char_name ===
+        guardCard.cardData.charName ===
         this.getPlayer(guardCard.isEnemy).heroCardCharName
       ) {
         if (
-          attackSupportCard.cardData.support_effect === supportEffects.HERO &&
+          attackSupportCard.cardData.supportEffect === supportEffects.HERO &&
           attackSupportCard.cardData.color === guardCard.cardData.color
         ) {
           const orbCards = this.getOrb(guardCard.isEnemy).slice(0, 2);
@@ -781,7 +781,7 @@ export class GameManager {
       } else {
         if (
           killCard &&
-          guardSupportCard.cardData.support_effect !== supportEffects.PRAY
+          guardSupportCard.cardData.supportEffect !== supportEffects.PRAY
         ) {
           return [
             () => {
@@ -792,7 +792,7 @@ export class GameManager {
                 setTimeout(() => {
                   createDialog(
                     "",
-                    `${avoidanceCard.cardData.char_name}は回避しますか?`,
+                    `${avoidanceCard.cardData.charName}は回避しますか?`,
                     () => {
                       avoidanceCard.location = CardLocation.EVACUATION;
                       this.setPlaterCards(avoidanceCard);
@@ -820,7 +820,7 @@ export class GameManager {
       } else {
         if (
           killCard &&
-          guardSupportCard.cardData.support_effect !== supportEffects.PRAY
+          guardSupportCard.cardData.supportEffect !== supportEffects.PRAY
         ) {
           return [() => {}, "必殺なし"];
         } else {

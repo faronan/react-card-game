@@ -128,18 +128,18 @@ export const Home = () => {
                     <img src={`${card.image}`} alt="" className="list-image" />
                   </td>
                   <td>{card.color}</td>
-                  <td>{card.char_name}</td>
+                  <td>{card.charName}</td>
                   <td>{card.cost}</td>
-                  <td>{card.over_cost || ""}</td>
+                  <td>{card.overCost || "-"}</td>
                   <td>{card.power}</td>
                   <td>{formatRange(card.range)}</td>
-                  <td>{card.support_power}</td>
+                  <td>{card.supportPower}</td>
                   <td>
-                    {card.support_effect !== supportEffects.NONE
-                      ? card.support_effect
-                      : ""}
+                    {card.supportEffect !== supportEffects.NONE
+                      ? card.supportEffect
+                      : "-"}
                   </td>
-                  <td>{card.tags.join("\n")}</td>
+                  <td>{card.tags.sort().join("\n")}</td>
                 </tr>
               ))}
             </tbody>

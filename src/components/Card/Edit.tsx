@@ -58,9 +58,9 @@ export const Edit = () => {
       ...card,
       id: Number(card.id),
       cost: Number(card.cost),
-      over_cost: Number(card.over_cost),
+      overCost: Number(card.overCost),
       power: Number(card.power),
-      support_power: Number(card.support_power),
+      supportPower: Number(card.supportPower),
     };
   };
 
@@ -125,10 +125,10 @@ export const Edit = () => {
           <label key={index}>
             <input
               type="checkbox"
-              name="support_effect"
+              name="supportEffect"
               value={effect}
               onChange={onChange}
-              checked={effect === card.support_effect}
+              checked={effect === card.supportEffect}
             />
             {effect}
           </label>
@@ -212,15 +212,15 @@ export const Edit = () => {
               <div className="col-sm-0">{colorCheckboxList(card)}</div>
             </div>
             <div className="form-group row">
-              <label htmlFor="char_name" className="col-sm-2 col-form-label">
+              <label htmlFor="charName" className="col-sm-2 col-form-label">
                 キャラクター名:
               </label>
               <div className="col-sm-4">
                 <input
                   type="text"
                   className="form-control"
-                  name="char_name"
-                  value={card.char_name}
+                  name="charName"
+                  value={card.charName}
                   onChange={onChange}
                 />
               </div>
@@ -240,15 +240,15 @@ export const Edit = () => {
               </div>
             </div>
             <div className="form-group row">
-              <label htmlFor="over_cost" className="col-sm-2 col-form-label">
+              <label htmlFor="overCost" className="col-sm-2 col-form-label">
                 CCコスト:
               </label>
               <div className="col-sm-2">
                 <input
                   type="number"
                   className="form-control"
-                  name="over_cost"
-                  value={card.over_cost}
+                  name="overCost"
+                  value={card.overCost}
                   onChange={onChange}
                 />
               </div>
@@ -274,25 +274,22 @@ export const Edit = () => {
               <div className="col-sm-0">{rangeCheckboxList(card)}</div>
             </div>
             <div className="form-group row">
-              <label
-                htmlFor="support_power"
-                className="col-sm-2 col-form-label"
-              >
+              <label htmlFor="supportPower" className="col-sm-2 col-form-label">
                 支援:
               </label>
               <div className="col-sm-2">
                 <input
                   type="number"
                   className="form-control"
-                  name="support_power"
-                  value={card.support_power}
+                  name="supportPower"
+                  value={card.supportPower}
                   onChange={onChange}
                 />
               </div>
             </div>
             <div className="form-group row">
               <label
-                htmlFor="support_effect"
+                htmlFor="supportEffect"
                 className="col-sm-2 col-form-label"
               >
                 支援効果<span style={{ color: "red" }}>(必須)</span>:
