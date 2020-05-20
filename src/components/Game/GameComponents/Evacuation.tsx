@@ -34,11 +34,7 @@ const Evacuation = (props: { isEnemy: boolean }) => {
   const cards = (
     <Slider {...settings}>
       {evacuationCard.map((card) => (
-        <Card
-          card={card}
-          isEnemy={props.isEnemy}
-          key={`${card.card_data.id}-${card.id}`}
-        ></Card>
+        <Card card={card} key={`${card.cardData.id}-${card.id}`}></Card>
       ))}
     </Slider>
   );

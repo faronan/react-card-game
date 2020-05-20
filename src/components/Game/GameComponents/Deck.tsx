@@ -9,7 +9,7 @@ const Deck = (props: { isEnemy: boolean }) => {
       src={`${process.env.PUBLIC_URL}/card_back_side.jpg`}
       className="deck_image"
       alt=""
-      onClick={() => gameManager.draw(props.isEnemy)}
+      onClick={() => gameManager.deckDraw(props.isEnemy)}
     />
   );
 };

@@ -10,11 +10,7 @@ const Orb = (props: { isEnemy: boolean }) => {
   const cards = (
     <ul className="orb">
       {orb.map((card) => (
-        <Card
-          card={card}
-          key={`${card.card_data.id}-${card.id}`}
-          isEnemy={props.isEnemy}
-        ></Card>
+        <Card card={card} key={`${card.cardData.id}-${card.id}`}></Card>
       ))}
     </ul>
   );

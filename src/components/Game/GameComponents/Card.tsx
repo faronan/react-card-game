@@ -8,11 +8,11 @@ import {
 import { hooksContexts } from "../Game";
 import "../../../css/gameStyle.css";
 
-const Card = (props: { card: GameCardStatusInterface; isEnemy: boolean }) => {
+const Card = (props: { card: GameCardStatusInterface }) => {
   const gameManager = React.useContext(hooksContexts);
   const card = props.card;
   const cardOnClick = () => {
-    gameManager.cardSelect(card, props.isEnemy);
+    gameManager.cardSelect(card);
   };
   const className = (() => {
     if (card.location === CardLocation.HAND) {
@@ -47,7 +47,7 @@ const Card = (props: { card: GameCardStatusInterface; isEnemy: boolean }) => {
     ) {
       return `${process.env.PUBLIC_URL}/card_back_side.jpg`;
     }
-    return card.card_data.image;
+    return card.cardData.image;
   })();
 
   // memo: src={`${process.env.PUBLIC_URL}/card.png`}
@@ -61,5 +61,4 @@ const Card = (props: { card: GameCardStatusInterface; isEnemy: boolean }) => {
   );
 };
 
-Card.defaultProps = { isEnemy: false };
 export default Card;

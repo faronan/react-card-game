@@ -33,7 +33,7 @@ const Bonds = (props: { isEnemy: boolean }) => {
       ></div>
       <div className="bonds">
         {bondsCard.map((card) => (
-          <Card card={card} key={`${card.card_data.id}-${card.id}`}></Card>
+          <Card card={card} key={`${card.cardData.id}-${card.id}`}></Card>
         ))}
       </div>
     </div>

@@ -9,7 +9,7 @@ const Hand = (props: { isEnemy: boolean }) => {
   const cards = (
     <div>
       {hands.map((card) => (
-        <Card card={card} key={`${card.card_data.id}-${card.id}`}></Card>
+        <Card card={card} key={`${card.cardData.id}-${card.id}`}></Card>
       ))}
     </div>
   );

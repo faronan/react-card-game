@@ -34,15 +34,15 @@ export const Game = () => {
   const myDeck = state["myDeck"];
   const enemyDeck = state["enemyDeck"];
 
-  const deckToGameCardStatusArray = (deck: DeckInterface, is_enemy = false) => {
+  const deckToGameCardStatusArray = (deck: DeckInterface, isEnemy = false) => {
     return Object.entries(deck.cardIdCount)
       .map(([cardId, count]) => {
         const card = cards.find((card) => card.id.toString() === cardId);
         return [...Array(count)].map((_, i) => {
           const gameCardStatus: GameCardStatusInterface = {
             id: i,
-            card_data: card!,
-            is_enemy: is_enemy,
+            cardData: card!,
+            isEnemy: isEnemy,
             status: CardStatus.UNACTION,
             location: CardLocation.DECK,
           };
@@ -81,7 +81,7 @@ export const Game = () => {
     );
     const myHeroCard = gameManager
       .getPlayerCards(false)
-      .find((c) => Number(c.card_data.id) === myDeck.HeroCardId)!;
+      .find((c) => Number(c.cardData.id) === myDeck.HeroCardId)!;
     myHeroCard.location = CardLocation.FIELD_FRONT;
 
     const newMyDeck = shuffledMyDeck.filter((card) => card !== myHeroCard);
@@ -99,7 +99,7 @@ export const Game = () => {
     const myOtherHeroCard = newMyDeck
       .slice(INITIAL_HAND_COUNT + INITIAL_ORB_COUNT, 1000)
       .filter(
-        (c) => c.id !== myHeroCard.id || c.card_data !== myHeroCard.card_data
+        (c) => c.id !== myHeroCard.id || c.cardData !== myHeroCard.cardData
       );
 
     gameManager.playerCards.setPlayerCards([
@@ -114,7 +114,7 @@ export const Game = () => {
     );
     const enemyHeroCard = gameManager
       .getPlayerCards(true)
-      .find((c) => Number(c.card_data.id) === myDeck.HeroCardId)!;
+      .find((c) => Number(c.cardData.id) === myDeck.HeroCardId)!;
     enemyHeroCard.location = CardLocation.FIELD_FRONT;
 
     const newEnemyDeck = shuffledEnemyDeck.filter(
@@ -136,7 +136,7 @@ export const Game = () => {
       .slice(INITIAL_ORB_COUNT + INITIAL_HAND_COUNT, 1000)
       .filter(
         (c) =>
-          c.id !== enemyHeroCard.id || c.card_data !== enemyHeroCard.card_data
+          c.id !== enemyHeroCard.id || c.cardData !== enemyHeroCard.cardData
       );
 
     gameManager.enemyPlayerCards.setPlayerCards([
