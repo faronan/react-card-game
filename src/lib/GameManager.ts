@@ -366,7 +366,7 @@ export class GameManager {
   ) {
     //1.出撃フェイズ 2.選択した場と逆(前or後)に同名のカードが存在しない
     if (
-      this.getPlayer(isEnemy).playerTurnStatus >= PlayerTurnStatusType.SORTIE ||
+      this.getPlayer(isEnemy).playerTurnStatus > PlayerTurnStatusType.SORTIE ||
       this.getField(isEnemy, !isBack).filter(
         (c) => c.cardData.charName === card.cardData.charName
       ).length > 0
@@ -513,6 +513,20 @@ export class GameManager {
     this.getPlayerCardById(selectedHand).location = CardLocation.BOND;
   }
 
+  getVector(attackCardLocation: CardLocation, guardCardLocation: CardLocation) {
+    if (attackCardLocation === CardLocation.FIELD_FRONT) {
+      if (guardCardLocation === CardLocation.FIELD_FRONT) {
+        return 1;
+      }
+      return 2;
+    } else {
+      if (guardCardLocation === CardLocation.FIELD_FRONT) {
+        return 2;
+      }
+      return 3;
+    }
+  }
+
   attackValidate(
     attackCard: GameCardStatusInterface,
     guardCard: GameCardStatusInterface
@@ -521,7 +535,10 @@ export class GameManager {
       attackCard.isEnemy === guardCard.isEnemy ||
       attackCard.status === CardStatus.DONE ||
       this.getPlayer(attackCard.isEnemy).playerTurnStatus ===
-        PlayerTurnStatusType.END
+        PlayerTurnStatusType.END ||
+      !attackCard.cardData.range.includes(
+        this.getVector(attackCard.location, guardCard.location)
+      )
     );
   }
 
