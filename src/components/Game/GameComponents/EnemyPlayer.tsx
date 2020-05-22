@@ -47,7 +47,7 @@ const EnemyPlayer = () => {
           gameManager.getPlayer().turnCount === 1 &&
             gameManager.getPlayer(true).turnCount === 0 &&
             gameManager.getPlayer().playerTurnStatus ===
-              PlayerTurnStatusType.BEGIN && (
+              PlayerTurnStatusType.GAME_BEGIN && (
               <button
                 className="enemy-mulligan-button"
                 onClick={() => gameManager.mulligan(true)}

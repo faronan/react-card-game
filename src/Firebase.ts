@@ -16,4 +16,5 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 
 export const db = firebase.firestore().settings(settings);
+export const realTimeDb = firebase.database().ref("battle");
 export default firebase;

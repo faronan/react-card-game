@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { CardInterface } from "../../interface/CardInterface";
 import { DeckInterface } from "../../interface/DeckInterface";
@@ -17,6 +17,12 @@ import { useGameCardController } from "../../lib/GameCardController";
 import "../../css/style.css";
 import { usePlayerController } from "../../lib/PlayerController";
 import { PlayerTurnStatusType } from "../../interface/PlayerTurnStatusTypeInterface";
+import { realTimeDb } from "../../Firebase";
+import {
+  fetchData,
+  formatDataToGameManager,
+  setDatabase,
+} from "../../lib/databaseAdapter";
 
 export const hooksContexts = React.createContext<GameManager>(
   new GameManager()
@@ -33,6 +39,7 @@ export const Game = () => {
   const cards = state["cards"];
   const myDeck = state["myDeck"];
   const enemyDeck = state["enemyDeck"];
+  const [isSetup, setIsSetup] = useState(false);
 
   const deckToGameCardStatusArray = (deck: DeckInterface, isEnemy = false) => {
     return Object.entries(deck.cardIdCount)
@@ -58,13 +65,31 @@ export const Game = () => {
 
   const gameManager = new GameManager(
     useGameCardController(deckToGameCardStatusArray(myDeck)),
-    usePlayerController(getHeroCharName(myDeck.HeroCardId)),
+    usePlayerController(false, getHeroCharName(enemyDeck.HeroCardId)),
     useGameCardController(deckToGameCardStatusArray(enemyDeck, true)),
-    usePlayerController(getHeroCharName(enemyDeck.HeroCardId)),
+    usePlayerController(true, getHeroCharName(enemyDeck.HeroCardId)),
     useOperatedController()
   );
 
+  const preInitialize = () => {
+    (async () => {
+      fetchData().then((res) => {
+        const key = "game1";
+        if (res) {
+          formatDataToGameManager(res[key], gameManager);
+          setIsSetup(true);
+          return;
+        }
+        {
+          initialize();
+          setIsSetup(true);
+        }
+      });
+    })();
+  };
+
   const initialize = () => {
+    //
     const INITIAL_HAND_COUNT = 6;
     const INITIAL_ORB_COUNT = 5;
     const shuffle = ([...arr]) => {
@@ -145,15 +170,27 @@ export const Game = () => {
       ...enemyHandCards,
       enemyHeroCard,
     ]);
+    setDatabase(gameManager);
 
-    gameManager.getPlayer(true).setPlayerTurnStatus(PlayerTurnStatusType.END);
+    gameManager
+      .getPlayer(true)
+      .updatePlayerTurnStatus(PlayerTurnStatusType.END);
     gameManager.getPlayer(false).addTurnCount();
+    //updatePlayerData(true, null, PlayerTurnStatusType.END);
+    //updatePlayerData(false, null, null, 1);
   };
 
   useEffect(() => {
-    initialize();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    preInitialize();
   }, []);
+
+  realTimeDb.on("child_changed", function (snapshot) {
+    //ここで値を読んでるから更新できそう
+    const res = snapshot.val();
+    if (res) {
+      formatDataToGameManager(res, gameManager);
+    }
+  });
 
   return (
     <hooksContexts.Provider value={gameManager}>

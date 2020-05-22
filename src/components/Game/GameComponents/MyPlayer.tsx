@@ -45,7 +45,7 @@ const MyPlayer = () => {
         </div>
         {gameManager.getPlayer().turnCount === 1 &&
           gameManager.getPlayer().playerTurnStatus ===
-            PlayerTurnStatusType.BEGIN && (
+            PlayerTurnStatusType.GAME_BEGIN && (
             <button
               className="my-mulligan-button"
               onClick={() => gameManager.mulligan()}

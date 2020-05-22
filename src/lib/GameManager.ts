@@ -33,10 +33,10 @@ export class GameManager {
     operatedController?: operatedController
   ) {
     this.playerCards = playerCards!;
-    this.player = player!;
     this.enemyPlayerCards = enemyPlayerCards!;
-    this.enemyPlayer = enemyPlayer!;
     this.operatedController = operatedController!;
+    this.player = player!;
+    this.enemyPlayer = enemyPlayer!;
   }
 
   cardSelect(card: GameCardStatusInterface) {
@@ -114,9 +114,9 @@ export class GameManager {
   // プレイヤー系は最初にこの関数を通すことで他の処理を共通化する
   getPlayer(isEnemy = false) {
     if (isEnemy) {
-      return this.player;
-    } else {
       return this.enemyPlayer;
+    } else {
+      return this.player;
     }
   }
 
@@ -126,9 +126,9 @@ export class GameManager {
       (c) => c.id !== card.id || c.cardData !== card.cardData
     );
     if (isEnemy) {
-      this.enemyPlayerCards.setPlayerCards([...otherCard, card]);
+      this.enemyPlayerCards.updatePlayerCards([...otherCard, card]);
     } else {
-      this.playerCards.setPlayerCards([...otherCard, card]);
+      this.playerCards.updatePlayerCards([...otherCard, card]);
     }
   }
 
@@ -225,7 +225,7 @@ export class GameManager {
       .map((card) => (card.status = CardStatus.UNACTION));
     this.setPlaterCards(this.getPlayerCards(isEnemy)[0]);
 
-    this.getPlayer(isEnemy).setPlayerTurnStatus(PlayerTurnStatusType.BEGIN);
+    this.getPlayer(isEnemy).updatePlayerTurnStatus(PlayerTurnStatusType.BEGIN);
 
     this.deckDraw(isEnemy);
     //相手のターン開始時に前衛にカードがない場合、全ての後衛カードを前衛に移動する(進軍)
@@ -233,7 +233,9 @@ export class GameManager {
       this.getField(!isEnemy, true).map(
         (card) => (card.location = CardLocation.FIELD_FRONT)
       );
-      //this.setPlaterCards(this.getField(!isEnemy, true)[0], !isEnemy);
+      console.log(this.getField(!isEnemy, true));
+      console.log(this.getField(!isEnemy, false));
+      this.setPlaterCards(this.getField(!isEnemy, false)[0]);
     }
   }
 
@@ -242,24 +244,25 @@ export class GameManager {
     //操作系のリセット
     this.operatedController.unselect();
 
-    this.getPlayer(isEnemy).setPlayerStatus(PlayerStatusType.NONE);
-    this.getPlayer(isEnemy).setPlayerTurnStatus(PlayerTurnStatusType.END);
+    this.getPlayer(isEnemy).updatePlayerStatus(PlayerStatusType.NONE);
+    this.getPlayer(isEnemy).updatePlayerTurnStatus(PlayerTurnStatusType.END);
   }
 
   handCardChoice(card: GameCardStatusInterface) {
     switch (this.getPlayer(card.isEnemy).playerStatus) {
       case PlayerStatusType.HAND_TRASH:
         card.location = CardLocation.EVACUATION;
-        this.getPlayer(card.isEnemy).setPlayerStatus(PlayerStatusType.NONE);
+        this.getPlayer(card.isEnemy).updatePlayerStatus(PlayerStatusType.NONE);
         break;
       case PlayerStatusType.HAND_TO_BOND:
         card.location = CardLocation.BOND;
-        this.getPlayer(card.isEnemy).setPlayerStatus(PlayerStatusType.NONE);
+        this.getPlayer(card.isEnemy).updatePlayerStatus(PlayerStatusType.NONE);
         break;
       default:
         this.operatedController.select(selectedType.NONE, card);
         break;
     }
+    this.setPlaterCards(card);
   }
 
   fieldCardChoice(card: GameCardStatusInterface) {
@@ -323,10 +326,13 @@ export class GameManager {
       .slice(INITIAL_HAND_COUNT, 1000)
       .map((card) => (card.location = CardLocation.DECK));
     if (!isEnemy) {
-      this.getPlayer(isEnemy).setPlayerTurnStatus(PlayerTurnStatusType.BOND);
+      this.getPlayer(isEnemy).updatePlayerTurnStatus(
+        PlayerTurnStatusType.BEGIN
+      );
     } else {
       this.getPlayer(isEnemy).addTurnCount();
     }
+    this.setPlaterCards(this.getDeck(isEnemy)[0]);
   }
 
   checkBondColor(color: string, isEnemy: boolean) {
@@ -484,13 +490,14 @@ export class GameManager {
           this.getPlayer(isEnemy).playerStatus ===
           PlayerStatusType.FIELD_CARD_MOVE
         ) {
-          this.getPlayer(isEnemy).setPlayerStatus(PlayerStatusType.NONE);
+          this.getPlayer(isEnemy).updatePlayerStatus(PlayerStatusType.NONE);
         } else {
           this.getPlayerCardById(selectedCard).status = CardStatus.DONE;
         }
-        this.getPlayer(isEnemy).setPlayerTurnStatus(
+        this.getPlayer(isEnemy).updatePlayerTurnStatus(
           PlayerTurnStatusType.ACTION
         );
+        this.setPlaterCards(selectedCard);
 
         break;
       default:
@@ -509,8 +516,9 @@ export class GameManager {
     }
 
     //絆フェイズにしかカードは絆に置けない、置いたら出撃フェイズへ
-    this.getPlayer(isEnemy).setPlayerTurnStatus(PlayerTurnStatusType.SORTIE);
+    this.getPlayer(isEnemy).updatePlayerTurnStatus(PlayerTurnStatusType.SORTIE);
     this.getPlayerCardById(selectedHand).location = CardLocation.BOND;
+    this.setPlaterCards(selectedHand);
   }
 
   getVector(attackCardLocation: CardLocation, guardCardLocation: CardLocation) {
@@ -548,7 +556,7 @@ export class GameManager {
       return;
     }
     attackCard.status = CardStatus.DONE;
-    this.getPlayer(attackCard.isEnemy).setPlayerTurnStatus(
+    this.getPlayer(attackCard.isEnemy).updatePlayerTurnStatus(
       PlayerTurnStatusType.ACTION
     );
 
@@ -581,7 +589,7 @@ export class GameManager {
           case supportEffects.DARK:
             //暗闇は相手の状態を変更する
             if (this.getHand(!attackSupportCard.isEnemy).length > 4) {
-              this.getPlayer(!attackSupportCard.isEnemy).setPlayerStatus(
+              this.getPlayer(!attackSupportCard.isEnemy).updatePlayerStatus(
                 PlayerStatusType.HAND_TRASH
               );
               return [
@@ -600,7 +608,7 @@ export class GameManager {
             }
             break;
           case supportEffects.FLY:
-            this.getPlayer(attackSupportCard.isEnemy).setPlayerStatus(
+            this.getPlayer(attackSupportCard.isEnemy).updatePlayerStatus(
               PlayerStatusType.FIELD_CARD_MOVE
             );
             return [
@@ -614,7 +622,7 @@ export class GameManager {
                     "味方を一体移動させますか?",
                     () => {},
                     () => {
-                      this.getPlayer(guardCard.isEnemy).setPlayerStatus(
+                      this.getPlayer(guardCard.isEnemy).updatePlayerStatus(
                         PlayerStatusType.NONE
                       );
                     }
@@ -635,7 +643,7 @@ export class GameManager {
             if (
               attackCard.cardData.color === attackSupportCard.cardData.color
             ) {
-              this.getPlayer(attackSupportCard.isEnemy).setPlayerStatus(
+              this.getPlayer(attackSupportCard.isEnemy).updatePlayerStatus(
                 PlayerStatusType.HAND_TO_BOND
               );
               return [
@@ -649,7 +657,7 @@ export class GameManager {
                       "手札を絆エリアに置きますか?",
                       () => {},
                       () => {
-                        this.getPlayer(guardCard.isEnemy).setPlayerStatus(
+                        this.getPlayer(guardCard.isEnemy).updatePlayerStatus(
                           PlayerStatusType.NONE
                         );
                       }
@@ -661,7 +669,7 @@ export class GameManager {
             break;
           case supportEffects.MAGIC:
             this.deckDraw(attackSupportCard.isEnemy);
-            this.getPlayer(attackSupportCard.isEnemy).setPlayerStatus(
+            this.getPlayer(attackSupportCard.isEnemy).updatePlayerStatus(
               PlayerStatusType.HAND_TRASH
             );
             return [
@@ -777,8 +785,6 @@ export class GameManager {
           (card) => (card.location = CardLocation.EVACUATION)
         );
       }
-      //　おまじない
-      this.setPlaterCards(this.getHand(guardCard.isEnemy)[0]);
     };
 
     const [yesButtonFlow, yesButtonMessage] = (() => {
@@ -854,6 +860,7 @@ export class GameManager {
             CardLocation.EVACUATION;
           //　おまじない
           this.setPlaterCards(this.getEvacuation(attackCard.isEnemy)[0]);
+          this.setPlaterCards(this.getEvacuation(guardCard.isEnemy)[0]);
           if (onCloseAction) {
             (onCloseAction as () => void)();
           }
@@ -870,6 +877,7 @@ export class GameManager {
         this.getSupport(attackCard.isEnemy).location = CardLocation.EVACUATION;
         //　おまじない
         this.setPlaterCards(this.getEvacuation(attackCard.isEnemy)[0]);
+        this.setPlaterCards(this.getEvacuation(guardCard.isEnemy)[0]);
         if (onCloseAction) {
           (onCloseAction as () => void)();
         }
